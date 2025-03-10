@@ -67,6 +67,32 @@ def capture_frames(cap, frame_queue):
             frame_queue.put(frame)
 
 
+# Process frames by converting them to grayscale, resizing, and applying preprocessing.
+def process_frames(frame_queue, gray_queue):
+    # Continuously process frames from the frame queue
+    while True:
+        if not frame_queue.empty():
+            # retrieve the frame from the queue
+            frame = frame_queue.get()
+
+            # Store original size for scaling bounding boxes
+            original_height, original_width = frame.shape[:2]
+
+            # Resize the frame to 300x300
+            resized_frame = cv2.resize(frame, (300, 300))
+
+            # Convert to grayscale
+            gray = cv2.cvtColor(resized_frame, cv2.COLOR_BGR2GRAY)
+
+            # Apply preprocessing
+            gray = cv2.equalizeHist(gray)
+            gray = cv2.GaussianBlur(gray, (3, 3), 0)
+
+            # Store the processed frame in the queue
+            if not gray_queue.full():
+                gray_queue.put((frame, gray, original_width, original_height))
+
+
 if __name__ == "__main__":
     cap = video_capture()
     face_cascade_classifier = haarcascade_classifier()
