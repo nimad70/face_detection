@@ -26,20 +26,31 @@ def preprocessing_frame(frame):
     resized_frame = cv2.resize(frame, (300, 300))
 
     # Convert the image to grayscale for computational efficiency
-    gray = cv2.cvtColor(resized_frame, cv2.COLOR_BGR2GRAY)
+    gray_frame = cv2.cvtColor(resized_frame, cv2.COLOR_BGR2GRAY)
 
     # To enhance contrast
-    gray = cv2.equalizeHist(gray)
+    gray_frame = cv2.equalizeHist(gray_frame)
 
     # To remove noises
-    gray = cv2.GaussianBlur(gray, (3, 3), 0)
+    gray_frame = cv2.GaussianBlur(gray_frame, (3, 3), 0)
 
-    return gray
+    return gray_frame
 
 
 
 if __name__ == "__main__":
+
+    # load haarcascade classifier for face detection
+    face_cascade_classifier = cv2.CascadeClassifier(
+        cv2.data.haarcascades + 'haarcascade_frontalface_default.xml'
+    )
+
+    # Check if the classifier is loaded
+    if face_cascade_classifier.empty():
+        print("Face cascade classifier is empty")
+        sys.exit()
     
+    # Create a video capture object
     cap = video_capture()
 
     # Continuously read the frames from the webcam
@@ -47,16 +58,46 @@ if __name__ == "__main__":
         # Read a frame
         res, frame = cap.read()
 
+        # Get the original height and width of the frame to rescale the bounding box
+        original_height, original_width = frame.shape[:2]
+
         # If the frame is not captured, then break the loop
         if not res:
             print("Fail to capture frames")
             break
 
-        gray_frame = preprocessing_frame(frame)
+        # Preprocess the frame
+        processed_frame = preprocessing_frame(frame)
+
+        # Detect faces in the image
+        faces = face_cascade_classifier.detectMultiScale(
+            processed_frame,
+            scaleFactor=1.1, # scale down the image by 20% to detect larger faces
+            minNeighbors=5, # number of neighboring rectangles (lower -> more false positives)
+            minSize=(30, 30), # minimum size of the face to detect
+            maxSize=(300, 300)  # Ignore very large faces
+        )
+
+        # Scale bounding boxes back to original size
+        scale_x = original_width / 300
+        scale_y = original_height / 300
+
+        # Store the scaled coordinates of the detected faces
+        scaled_faces = []
+        for (x, y, w, h) in faces:
+            x = int(x * scale_x)
+            y = int(y * scale_y)
+            w = int(w * scale_x)
+            h = int(h * scale_y)
+            scaled_faces.append((x, y, w, h))
+
+        # Draw a bounding box around the detected faces
+        for (x, y, w, h) in scaled_faces:
+            cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
 
         # Display the captured frame
-        # cv2.imshow("Webcam", frame)
-        cv2.imshow("Webcam", gray_frame)
+        cv2.imshow("Webcam", frame)
+        # cv2.imshow("Webcam", gray_frame)
 
         # Exit the program if the user presses 'q'
         if cv2.waitKey(1) & 0xFF == ord('q'):
