@@ -4,6 +4,12 @@ import queue
 import threading
 
 
+# Milti-Threading/Processing
+frame_queue = queue.Queue(maxsize=1) # Queue for raw frames
+gray_queue = queue.Queue(maxsize=1) # Queue for preprocessed grayscale frames
+faces_queue = queue.Queue(maxsize=1) # Queue for deteceted faces
+
+
 def video_capture():
     """
     Opens the first available webcam and returns the VideoCapture object.
@@ -46,25 +52,40 @@ def haarcascade_classifier():
     return face_cascade_classifier
 
 
+# Continuously capture frames from the webcam and add them to the frame queue.
+def capture_frames(cap, frame_queue):
+    while True:
+        # Capture frames from the video source
+        res, frame = cap.read()
+
+        # If the frame is not captured, then break the loop
+        if not res:
+            break
+
+        # Store the frame in the queue
+        if not frame_queue.full():
+            frame_queue.put(frame)
+
+
 if __name__ == "__main__":
     cap = video_capture()
     face_cascade_classifier = haarcascade_classifier()
 
     
     # To display the final frames
-    while True:
-        res, frame = cap.read()
+    # while True:
+        # res, frame = cap.read()
 
-        if not res:
-            print("Failed to capture frames")
-            break
+        # if not res:
+        #     print("Failed to capture frames")
+        #     break
 
         # Display the resulting frame
-        cv2.imshow('Webcam face detection', frame)
+        # cv2.imshow('Webcam face detection', frame)
 
         # Break the loop when 'q' is pressed
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break   
+        # if cv2.waitKey(1) & 0xFF == ord('q'):
+        #     break   
 
 
     # Release the video capture object
