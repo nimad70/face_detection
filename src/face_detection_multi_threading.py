@@ -93,6 +93,40 @@ def process_frames(frame_queue, gray_queue):
                 gray_queue.put((frame, gray, original_width, original_height))
 
 
+
+# Detect faces in processed frames and scale bounding boxes back to the original size.
+def face_detection(gray_queue, faces_queue, face_cascade_classifier):
+    while True:
+        # If the queue is not empty, retrieve the frame and processed frames
+        if not gray_queue.empty():
+            frame, gray, original_width, original_height = gray_queue.get()
+
+            # Detect faces in the resized (300x300) grayscale image
+            faces = face_cascade_classifier.detectMultiScale(
+                gray,
+                scaleFactor=1.2,
+                minNeighbors=7,
+                minSize=(30, 30),
+            )
+
+            # Scale bounding boxes back to the original size
+            scale_x = original_width / 300
+            scale_y = original_height / 300
+
+            # Store the scaled coordinates of the detected faces
+            scaled_faces = []
+            for (x, y, w, h) in faces:
+                x = int(x * scale_x)
+                y = int(y * scale_y)
+                w = int(w * scale_x)
+                h = int(h * scale_y)
+                scaled_faces.append((x, y, w, h))
+
+            # Store the frame and scaled detected faces in the queue
+            if not faces_queue.full():
+                faces_queue.put((frame, scaled_faces))
+
+
 if __name__ == "__main__":
     cap = video_capture()
     face_cascade_classifier = haarcascade_classifier()
