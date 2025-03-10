@@ -127,9 +127,65 @@ def face_detection(gray_queue, faces_queue, face_cascade_classifier):
                 faces_queue.put((frame, scaled_faces))
 
 
-if __name__ == "__main__":
+# Start the video capture, frame processing, and face detection threads.
+def start_threads():
     cap = video_capture()
     face_cascade_classifier = haarcascade_classifier()
+
+    # Video capture thread
+    video_capture_thread = threading.Thread(
+        target=capture_frames, 
+        args=(cap, frame_queue), 
+        daemon=True
+    )
+
+    # Frame processing thread
+    frame_process_thread = threading.Thread(
+        target=process_frames, 
+        args=(frame_queue, gray_queue), 
+        daemon=True)
+
+    # Face detection thread
+    face_detection_thread = threading.Thread(
+        target=face_detection,
+        args=((gray_queue, faces_queue, face_cascade_classifier)),
+        daemon=True
+    )
+
+    # Start threads
+    video_capture_thread.start()
+    frame_process_thread.start()
+    face_detection_thread.start()
+
+
+    # To display the final frames
+    while True:
+        # If the queue is not empty, retrieve the frame and detected faces
+        if not faces_queue.empty():
+            frame, faces = faces_queue.get()
+
+            # Draw a bounding box around the detected faces
+            for (x, y, w, h) in faces:
+                cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
+            
+            # Display the resulting frame
+            cv2.imshow('Webcam face detection', frame)
+
+        # Break the loop when 'q' is pressed
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break   
+
+
+    # Release the video capture object
+    cap.release()
+    # Close all windows
+    cv2.destroyAllWindows()
+
+
+if __name__ == "__main__":
+    start_threads()
+    # cap = video_capture()
+    # face_cascade_classifier = haarcascade_classifier()
 
     
     # To display the final frames
@@ -149,6 +205,6 @@ if __name__ == "__main__":
 
 
     # Release the video capture object
-    cap.release()
-    # Close all windows
-    cv2.destroyAllWindows()
+    # cap.release()
+    # # Close all windows
+    # cv2.destroyAllWindows()
