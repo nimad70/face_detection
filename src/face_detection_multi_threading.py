@@ -52,56 +52,64 @@ def haarcascade_classifier():
     return face_cascade_classifier
 
 
-# Continuously capture frames from the webcam and add them to the frame queue.
 def capture_frames(cap, frame_queue):
+    """
+    Continuously capture frames from the webcam and add them to the frame queue.
+    
+    Args:
+        cap (cv2.VideoCapture): Video capture object.
+        frame_queue (queue.Queue): Queue to store captured frames.
+    """
     while True:
-        # Capture frames from the video source
-        res, frame = cap.read()
+        res, frame = cap.read() # Capture frames from the video source
 
         # If the frame is not captured, then break the loop
         if not res:
             break
 
-        # Store the frame in the queue
         if not frame_queue.full():
             frame_queue.put(frame)
 
 
-# Process frames by converting them to grayscale, resizing, and applying preprocessing.
 def process_frames(frame_queue, gray_queue):
-    # Continuously process frames from the frame queue
+    """
+    Process frames by converting them to grayscale, resizing, and applying preprocessing.
+    
+    Args:
+        frame_queue (queue.Queue): Queue containing raw frames.
+        gray_queue (queue.Queue): Queue to store processed processed frames.
+    """
     while True:
         if not frame_queue.empty():
-            # retrieve the frame from the queue
             frame = frame_queue.get()
 
             # Store original size for scaling bounding boxes
             original_height, original_width = frame.shape[:2]
-
-            # Resize the frame to 300x300
+            
             resized_frame = cv2.resize(frame, (300, 300))
+            gray = cv2.cvtColor(resized_frame, cv2.COLOR_BGR2GRAY) # Convert the image to grayscale
+            gray = cv2.equalizeHist(gray) # To enhance contrast
+            gray = cv2.GaussianBlur(gray, (3, 3), 0) # To remove noises
 
-            # Convert to grayscale
-            gray = cv2.cvtColor(resized_frame, cv2.COLOR_BGR2GRAY)
-
-            # Apply preprocessing
-            gray = cv2.equalizeHist(gray)
-            gray = cv2.GaussianBlur(gray, (3, 3), 0)
-
-            # Store the processed frame in the queue
             if not gray_queue.full():
                 gray_queue.put((frame, gray, original_width, original_height))
 
 
-
-# Detect faces in processed frames and scale bounding boxes back to the original size.
 def face_detection(gray_queue, faces_queue, face_cascade_classifier):
+    """
+    Detect faces in processed frames and scale bounding boxes back to the original size.
+    
+    Args:
+        gray_queue (queue.Queue): Queue containing processed frames.
+        faces_queue (queue.Queue): Queue to store detected face.
+        face_cascade_classifier (cv2.CascadeClassifier): Haar cascade classifier for face detection.
+    """
     while True:
-        # If the queue is not empty, retrieve the frame and processed frames
+        # retrieve the frame and processed frames
         if not gray_queue.empty():
             frame, gray, original_width, original_height = gray_queue.get()
-
-            # Detect faces in the resized (300x300) grayscale image
+            
+            # Detect faces in the processed frame
             faces = face_cascade_classifier.detectMultiScale(
                 gray,
                 scaleFactor=1.2,
@@ -113,8 +121,7 @@ def face_detection(gray_queue, faces_queue, face_cascade_classifier):
             scale_x = original_width / 300
             scale_y = original_height / 300
 
-            # Store the scaled coordinates of the detected faces
-            scaled_faces = []
+            scaled_faces = [] # Store the scaled coordinates of the detected faces
             for (x, y, w, h) in faces:
                 x = int(x * scale_x)
                 y = int(y * scale_y)
@@ -122,13 +129,14 @@ def face_detection(gray_queue, faces_queue, face_cascade_classifier):
                 h = int(h * scale_y)
                 scaled_faces.append((x, y, w, h))
 
-            # Store the frame and scaled detected faces in the queue
             if not faces_queue.full():
                 faces_queue.put((frame, scaled_faces))
 
 
-# Start the video capture, frame processing, and face detection threads.
 def start_threads():
+    """
+    Start the video capture, frame processing, and face detection threads.
+    """
     cap = video_capture()
     face_cascade_classifier = haarcascade_classifier()
 
@@ -160,7 +168,7 @@ def start_threads():
 
     # To display the final frames
     while True:
-        # If the queue is not empty, retrieve the frame and detected faces
+        # Retrieve the frame and detected faces
         if not faces_queue.empty():
             frame, faces = faces_queue.get()
 
@@ -171,40 +179,11 @@ def start_threads():
             # Display the resulting frame
             cv2.imshow('Webcam face detection', frame)
 
-        # Break the loop when 'q' is pressed
+        # Exit if the user presses 'q'
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break   
-
 
     # Release the video capture object
     cap.release()
     # Close all windows
     cv2.destroyAllWindows()
-
-
-if __name__ == "__main__":
-    start_threads()
-    # cap = video_capture()
-    # face_cascade_classifier = haarcascade_classifier()
-
-    
-    # To display the final frames
-    # while True:
-        # res, frame = cap.read()
-
-        # if not res:
-        #     print("Failed to capture frames")
-        #     break
-
-        # Display the resulting frame
-        # cv2.imshow('Webcam face detection', frame)
-
-        # Break the loop when 'q' is pressed
-        # if cv2.waitKey(1) & 0xFF == ord('q'):
-        #     break   
-
-
-    # Release the video capture object
-    # cap.release()
-    # # Close all windows
-    # cv2.destroyAllWindows()
