@@ -176,6 +176,7 @@ cython_debug/
 # VSCode settings
 .vscode/
 *.code-workspace
+.qodo/
 
 # Jupyter Notebook
 .ipynb_checkpoints
