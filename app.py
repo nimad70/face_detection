@@ -1,6 +1,7 @@
 import cv2
 import sys
 from src.face_detection import video_capture, haarcascade_classifier, face_detector, draw_rectangle, preprocessing_frame
+from src.face_detection_multi_threading import start_threads
 
 
 def main():
@@ -40,5 +41,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # main()
+    start_threads()
+
     
