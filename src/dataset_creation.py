@@ -36,28 +36,41 @@ for dirs in [TRAIN_DATA_PATH, VAL_DATA_PATH, TEST_DATA_PATH]:
 
 # https://docs.python.org/3/library/shutil.html
 # To split the dataset
-def split_dataset(label):
+def split_dataset(labels):
+    is_small_to_split = False
+
     # To define the ratio of the dataset
-    train_ratio = 0.6
-    val_ratio = 0.2
-    test_ratio = 0.2
-    # To get the image files with from the asked directory
-    image_files = list((DATASET_PATH / label).glob("*.jpg"))
-    random.shuffle(image_files) # shuffle the images randomly
-    print(f"Total {label} images: {len(image_files)}")
+    for label in labels:
+        train_ratio = 0.6
+        val_ratio = 0.2
+        # test_ratio = 0.2
 
-    train_count = int(len(image_files) * train_ratio)
-    val_count = int(len(image_files) * val_ratio)
+        # To get the image files with from the asked directory
+        image_files = list((DATASET_PATH / label).glob("*.jpg"))
+        random.shuffle(image_files) # shuffle the images randomly
+        len_all_images = len(image_files)
+        print(f"Total {label} images: {len_all_images}")
 
-    for i, image in enumerate(image_files):
-        if i < train_count:
-            destination_path = TRAIN_DATA_PATH / label / image.name
-        elif i < train_count + val_count:
-            destination_path = VAL_DATA_PATH / label / image.name
+        train_count = int(len(image_files) * train_ratio)
+        val_count = int(len(image_files) * val_ratio)
+        # test_count = int(len(image_files) * test_ratio)
+
+        if len_all_images > 5:
+            for i, image in enumerate(image_files):
+                if i < train_count:
+                    destination_path = TRAIN_DATA_PATH / label / image.name
+                elif i < train_count + val_count:
+                    destination_path = VAL_DATA_PATH / label / image.name
+                else:
+                    destination_path = TEST_DATA_PATH / label / image.name
+
+                shutil.copy(str(image), str(destination_path))
         else:
-            destination_path = TEST_DATA_PATH / label / image.name
-
-        shutil.copy(str(image), str(destination_path))
+            is_small_to_split = True
+            print(f"The total number of '{label}' images are too small to split, \n"
+                  "please take more shots to add to the dataset")
+    
+    return is_small_to_split
 
 
 
@@ -273,8 +286,13 @@ def start_threads():
 
 
 if __name__ == "__main__":
-    start_threads()
-    # To split the dataset
-    
-    split_dataset("smile")
-    print("Smile dataset split completed")
+    # split_dataset("smile")
+    is_splited = True
+    while is_splited:
+        start_threads()
+        # To split the dataset
+        res = split_dataset(LABELS)
+        if not res:
+            break
+
+    print("Smile and Non-smile datasets are splited")
