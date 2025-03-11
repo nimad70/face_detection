@@ -3,6 +3,8 @@ import cv2
 import time
 import csv
 from pathlib import Path
+import shutil
+import random
 
 import queue
 import threading
@@ -31,6 +33,33 @@ LABELS = ["smile", "nosmile"]
 for dirs in [TRAIN_DATA_PATH, VAL_DATA_PATH, TEST_DATA_PATH]: 
     for label in LABELS:
         (dirs / label).mkdir(parents=True, exist_ok=True)
+
+# https://docs.python.org/3/library/shutil.html
+# To split the dataset
+def split_dataset(label):
+    # To define the ratio of the dataset
+    train_ratio = 0.6
+    val_ratio = 0.2
+    test_ratio = 0.2
+    # To get the image files with from the asked directory
+    image_files = list((DATASET_PATH / label).glob("*.jpg"))
+    random.shuffle(image_files) # shuffle the images randomly
+    print(f"Total {label} images: {len(image_files)}")
+
+    train_count = int(len(image_files) * train_ratio)
+    val_count = int(len(image_files) * val_ratio)
+
+    for i, image in enumerate(image_files):
+        if i < train_count:
+            destination_path = TRAIN_DATA_PATH / label / image.name
+        elif i < train_count + val_count:
+            destination_path = VAL_DATA_PATH / label / image.name
+        else:
+            destination_path = TEST_DATA_PATH / label / image.name
+
+        shutil.copy(str(image), str(destination_path))
+
+
 
 # Milti-Threading/Processing
 frame_queue = queue.Queue(maxsize=1) # Queue for raw frames
@@ -245,3 +274,7 @@ def start_threads():
 
 if __name__ == "__main__":
     start_threads()
+    # To split the dataset
+    
+    split_dataset("smile")
+    print("Smile dataset split completed")
