@@ -1,5 +1,8 @@
 """
 Data Augmentation for Image Classification
+
+This script performs resizing, rescaling, and data augmentation on image datasets. 
+Augmented images are saved to enrich the training dataset, enhancing model performance and robustness.
 """
 
 import random
@@ -17,19 +20,26 @@ from tensorflow.keras.models import Sequential
 DATASET_PATH = Path("dataset")
 DATA_PATH = Path("data")
 
-# Directories for train/validation/test datasets
+# Directories for training datasets
 TRAIN_DATA_PATH = DATA_PATH / "train"
 LABELS = ["smile", "nosmile"]
 
+# Create directories for corresponding training datasets if does not exist
 for label in LABELS:
         (TRAIN_DATA_PATH / label).mkdir(parents=True, exist_ok=True)
 
 IMG_SIZE = 180
 
-# save time, memory, and computing resources by resizing and rescaling images before training
+
 def resize_images(image):
     """
-    Resize images to the IMG_SIZE constant for shape consistent and rescale pixel values.
+    Resizes input images to IMG_SIZE for consistent dimensions to save time, memory, and computing resources
+
+    Args:
+        image (np.ndarray): Input image tensor.
+
+    Returns:
+        result (Tensor): Resized image tensor.
     """
     resize_and_rescale = tf.keras.Sequential([
         layers.Resizing(IMG_SIZE, IMG_SIZE), 
@@ -40,7 +50,13 @@ def resize_images(image):
 
 def resize_rescale_images(image):
     """
-    Resize images to the IMG_SIZE constant for shape consistent and rescale pixel values.
+    Resizes and rescales input images to IMG_SIZE and normalizes pixel values.
+
+    Args:
+        image (np.ndarray): Input image tensor.
+
+    Returns:
+        result (Tensor): Resized and normalized image tensor.
     """
     image = tf.cast(image, tf.float32)
     resize_and_rescale = tf.keras.Sequential([
@@ -52,10 +68,15 @@ def resize_rescale_images(image):
     return result
 
 
-# Apply data augmentation to the input image
 def data_augmentation(image):
     """
-    Apply data augmentation to the input image.
+    Applies data augmentation techniques such as random flipping, rotation, zoom, and contrast adjustment.
+
+    Args:
+        image (Tensor): Input image tensor.
+
+    Returns:
+        result (Tensor): Augmented image tensor.
     """
     data_augmentation = tf.keras.Sequential([
         layers.RandomFlip("horizontal_and_vertical"), # Randomly flip the image
@@ -68,8 +89,12 @@ def data_augmentation(image):
     return result
 
 
-# Save augmented images to the training dataset
 def save_augmented_images():
+    """
+    Augments and saves 50% of images from the dataset to the corresponding training directory.
+
+    Reads images, applies resizing and augmentation, then saves the augmented images.
+    """
     for label in LABELS:
         image_directory = DATASET_PATH / label
 
