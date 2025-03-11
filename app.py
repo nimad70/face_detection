@@ -51,7 +51,7 @@ if __name__ == "__main__":
         # To split the dataset
         res = split_dataset(LABELS)
         
-        if not res:
+        if res:
             break
         
         warning_text = "*WARNING: Please take at least 6 shots per each category to add to the dataset"
