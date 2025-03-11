@@ -2,7 +2,20 @@ import cv2
 import sys
 import queue
 import threading
-from src.dataset_creation import creat_dir
+from pathlib import Path
+import csv
+import time
+
+
+# To automate the process of creating the dataset for smile and no smile images
+# Path Constants
+DATASET_PATH = Path("dataset")
+SMILE_PATH = DATASET_PATH / "smile"
+NO_SMILE_PATH = DATASET_PATH / "nosmile"
+
+# To create directory if they don't exist already, create missing parents if needed
+SMILE_PATH.mkdir(parents=True, exist_ok=True)
+NO_SMILE_PATH.mkdir(parents=True, exist_ok=True)
 
 
 # Milti-Threading/Processing
@@ -134,6 +147,14 @@ def face_detection(gray_queue, faces_queue, face_cascade_classifier):
                 faces_queue.put((frame, scaled_faces))
 
 
+# Menu to display the options
+def display_menu():
+    print("\nThese are options you can choose from: \n\n"
+    "1. Press 'q' to quit\n"
+    "2. Press 's' to save the detected faces\n"
+    "3. Press 'a' to save the detected faces without smile\n")
+
+
 def start_threads():
     """
     Start the video capture, frame processing, and face detection threads.
@@ -166,10 +187,9 @@ def start_threads():
     frame_process_thread.start()
     face_detection_thread.start()
 
-    # Menu
-    menu()
+    display_menu() # Display the menu
 
-    # To display the final frames
+    # To display the final frames and save the detected faces
     while True:
         # Retrieve the frame and detected faces
         if not faces_queue.empty():
@@ -186,19 +206,31 @@ def start_threads():
         # if cv2.waitKey(1) & 0xFF == ord('q'):
         #     break
 
-        res_proceed = creat_dir(frame, faces)
-        if not res_proceed:
-            break
+        # To save detected faces
+        with open(DATASET_PATH / "labels.csv", mode="a", newline="") as csvfile:
+            label_writer = csv.writer(csvfile) # Create a CSV writer object
+            selected_key = cv2.waitKey(1) & 0xFF # Wait for the user to press a key
+            
+            # To save the detected faces inside smile/nosmile directories
+            if selected_key == ord('s') or selected_key == ord('a'):
+                for (x, y, w, h) in faces:
+                    face = frame[y:y+h, x:x+w] # Crop the detected face
+                    filename = f"face_{int(time.time())}.jpg" # Create a unique filename
+                    label = "smile" if selected_key == ord('s') else 'nosmile' # Assign the label
+                    # Save the face in the corresponding directory
+                    path = SMILE_PATH / filename if selected_key == ord('s') else NO_SMILE_PATH /filename
+                    cv2.imwrite(str(path), face) # Save the face image
+
+                    # write the label in a CSV file
+                    label_writer.writerow([filename, label])
+
+            # Exit if the user presses 'q'
+            if selected_key == ord('q'):
+                break
+
 
     # Release the video capture object
     cap.release()
     # Close all windows
     cv2.destroyAllWindows()
-
-
-def menu():
-    print("\nThese are options you can choose from: \n\n"
-    "1. Press 'q' to quit\n"
-    "2. Press 's' to save the detected faces\n"
-    "3. Press 'a' to save the detected faces without smile\n")
 
