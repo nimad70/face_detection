@@ -30,7 +30,17 @@ def resize_images(image):
     return result
 
 
-
+def data_augmentation(image):
+    """
+    Apply data augmentation to the input image.
+    """
+    data_augmentation = tf.keras.Sequential([
+        layers.RandomFlip("horizontal_and_vertical"), # Randomly flip the image
+        layers.RandomRotation(0.1), # Randomly rotate the image
+        layers.RandomZoom(0.1), # Randomly zoom the image
+    ])
+    result = data_augmentation(image)
+    return result
 
 
 
