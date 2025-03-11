@@ -19,6 +19,19 @@ SMILE_PATH.mkdir(parents=True, exist_ok=True)
 NO_SMILE_PATH.mkdir(parents=True, exist_ok=True)
 
 
+# AUtomate spliting the data
+# To create train/val/test datasets
+DATA_PATH = Path("data")
+TRAIN_DATA_PATH = DATA_PATH / "train"
+VAL_DATA_PATH = DATA_PATH / "val"
+TEST_DATA_PATH = DATA_PATH / "test"
+LABELS = ["smile", "nosmile"]
+
+
+for dirs in [TRAIN_DATA_PATH, VAL_DATA_PATH, TEST_DATA_PATH]: 
+    for label in LABELS:
+        (dirs / label).mkdir(parents=True, exist_ok=True)
+
 # Milti-Threading/Processing
 frame_queue = queue.Queue(maxsize=1) # Queue for raw frames
 gray_queue = queue.Queue(maxsize=1) # Queue for preprocessed grayscale frames
