@@ -1,3 +1,10 @@
+"""
+Real-time Webcam Face Detection and Dataset Collection
+
+This script captures live video from the user's webcam, detects faces using OpenCV's Haar Cascade classifier, 
+processes frames in a multithreaded pipeline, and saves detected faces into separate datasets labeled as "smile" or "nosmile" based on user input. 
+Labels are recorded in a CSV file for future use in image processing tasks.
+"""
 import cv2
 import sys
 import queue
@@ -7,18 +14,17 @@ import csv
 import time
 
 
-# To automate the process of creating the dataset for smile and no smile images
-# Path Constants
+# Define the path to save the dataset
 DATASET_PATH = Path("dataset")
 SMILE_PATH = DATASET_PATH / "smile"
 NO_SMILE_PATH = DATASET_PATH / "nosmile"
 
-# To create directory if they don't exist already, create missing parents if needed
+# Create directory if they do not exist already
 SMILE_PATH.mkdir(parents=True, exist_ok=True)
 NO_SMILE_PATH.mkdir(parents=True, exist_ok=True)
 
 
-# Milti-Threading/Processing
+# Queues for multi-Threading
 frame_queue = queue.Queue(maxsize=1) # Queue for raw frames
 gray_queue = queue.Queue(maxsize=1) # Queue for preprocessed grayscale frames
 faces_queue = queue.Queue(maxsize=1) # Queue for deteceted faces
@@ -52,7 +58,7 @@ def haarcascade_classifier():
     Load the Haar Cascade classifier for face detection.
     
     Returns:
-        face_cascade_classifier (cv2.CascadeClassifier): Preloaded face detection classifier.
+        face_cascade_classifier (cv2.CascadeClassifier): loaded the face detection classifier.
     """
     face_cascade_classifier = cv2.CascadeClassifier(
         cv2.data.haarcascades + 'haarcascade_frontalface_default.xml'
@@ -147,8 +153,10 @@ def face_detection(gray_queue, faces_queue, face_cascade_classifier):
                 faces_queue.put((frame, scaled_faces))
 
 
-# Menu to display the options
 def display_menu():
+    """
+    Displays user interaction options.
+    """
     print("\nThese are options you can choose from: \n\n"
     "1. Press 'q' to quit\n"
     "2. Press 's' to save the detected faces\n"
@@ -157,7 +165,13 @@ def display_menu():
 
 def start_threads():
     """
-    Start the video capture, frame processing, and face detection threads.
+    Initializes and start the video capture, frame processing, and face detection threads.
+    three separate threads for:
+    1. Capturing frames from the webcam.
+    2. Processing frames (grayscale conversion, resizing, enhancing, and noise reduction).
+    3. Detecting faces in the processed frames.
+
+    The threads continuously run until terminated.
     """
     cap = video_capture()
     face_cascade_classifier = haarcascade_classifier()
@@ -187,24 +201,17 @@ def start_threads():
     frame_process_thread.start()
     face_detection_thread.start()
 
-    display_menu() # Display the menu
+    display_menu()
 
-    # To display the final frames and save the detected faces
     while True:
-        # Retrieve the frame and detected faces
+        # To display the final frames
         if not faces_queue.empty():
             frame, faces = faces_queue.get()
 
-            # Draw a bounding box around the detected faces
             for (x, y, w, h) in faces:
                 cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
             
-            # Display the resulting frame
             cv2.imshow('Webcam face detection', frame)
-
-        # Exit if the user presses 'q'
-        # if cv2.waitKey(1) & 0xFF == ord('q'):
-        #     break
 
         # To save detected faces
         with open(DATASET_PATH / "labels.csv", mode="a", newline="") as csvfile:
@@ -228,9 +235,6 @@ def start_threads():
             if selected_key == ord('q'):
                 break
 
-
-    # Release the video capture object
-    cap.release()
-    # Close all windows
-    cv2.destroyAllWindows()
+    cap.release() # Release the video capture object
+    cv2.destroyAllWindows() # Close all windows
 
