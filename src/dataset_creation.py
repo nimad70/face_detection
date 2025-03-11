@@ -35,7 +35,7 @@ def split_dataset(labels):
     Returns:
         bool: True if any category has insufficient data to split; otherwise, False.
     """
-    is_small_to_split = False
+    is_small_to_split = True
 
     for label in labels:
         # Fetch and shuffle image files from the dataset directory
@@ -64,7 +64,7 @@ def split_dataset(labels):
 
                 shutil.copy(str(image), str(destination_path)) # Copy the image to the destination path
         else:
-            is_small_to_split = True
+            is_small_to_split = False
             print(f"The total number of '{label}' images are too small to split, \n")
     
     return is_small_to_split
