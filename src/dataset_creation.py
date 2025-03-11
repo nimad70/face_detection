@@ -67,8 +67,7 @@ def split_dataset(labels):
                 shutil.copy(str(image), str(destination_path))
         else:
             is_small_to_split = True
-            print(f"The total number of '{label}' images are too small to split, \n"
-                  "please take more shots to add to the dataset")
+            print(f"The total number of '{label}' images are too small to split, \n")
     
     return is_small_to_split
 
@@ -238,7 +237,7 @@ def start_threads():
     print("\nThese are options you can choose from: \n\n"
     "1. Press 'q' to quit\n"
     "2. Press 's' to save the detected faces\n"
-    "3. Press 'a' to save the detected faces without smile")
+    "3. Press 'a' to save the detected faces without smile\n")
 
     # To display the final frames
     while True:
@@ -290,9 +289,17 @@ if __name__ == "__main__":
     is_splited = True
     while is_splited:
         start_threads()
+
         # To split the dataset
         res = split_dataset(LABELS)
+        
         if not res:
             break
-
+        
+        warning_text = "*WARNING: Please take at least 5 shots per each category to add to the dataset"
+        
+        print('-' * len(warning_text))
+        print(f"{warning_text}")
+        print('-' * len(warning_text))
+        
     print("Smile and Non-smile datasets are splited")
