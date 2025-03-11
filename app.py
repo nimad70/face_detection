@@ -2,6 +2,7 @@ import cv2
 import sys
 from src.face_detection import video_capture, haarcascade_classifier, face_detector, draw_rectangle, preprocessing_frame
 from src.face_detection_multi_threading import start_threads
+from src.dataset_creation import split_dataset, LABELS
 
 
 def main():
@@ -42,6 +43,21 @@ def main():
 
 if __name__ == "__main__":
     # main()
-    start_threads()
+    # start_threads()
+    is_splited = True
+    while is_splited:
+        start_threads()
 
-    
+        # To split the dataset
+        res = split_dataset(LABELS)
+        
+        if not res:
+            break
+        
+        warning_text = "*WARNING: Please take at least 6 shots per each category to add to the dataset"
+        
+        print('-' * len(warning_text))
+        print(f"{warning_text}")
+        print('-' * len(warning_text))
+        
+    print("Smile and Non-smile datasets are splited")
