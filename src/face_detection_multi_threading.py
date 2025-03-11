@@ -2,6 +2,7 @@ import cv2
 import sys
 import queue
 import threading
+from src.dataset_creation import creat_dir
 
 
 # Milti-Threading/Processing
@@ -165,6 +166,8 @@ def start_threads():
     frame_process_thread.start()
     face_detection_thread.start()
 
+    # Menu
+    menu()
 
     # To display the final frames
     while True:
@@ -180,10 +183,22 @@ def start_threads():
             cv2.imshow('Webcam face detection', frame)
 
         # Exit if the user presses 'q'
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break   
+        # if cv2.waitKey(1) & 0xFF == ord('q'):
+        #     break
+
+        res_proceed = creat_dir(frame, faces)
+        if not res_proceed:
+            break
 
     # Release the video capture object
     cap.release()
     # Close all windows
     cv2.destroyAllWindows()
+
+
+def menu():
+    print("\nThese are options you can choose from: \n\n"
+    "1. Press 'q' to quit\n"
+    "2. Press 's' to save the detected faces\n"
+    "3. Press 'a' to save the detected faces without smile\n")
+
