@@ -7,21 +7,12 @@ import shutil
 import random
 
 
-
-# To automate the process of creating the dataset for smile and no smile images
+# AUtomate spliting the data
 # Path Constants
 DATASET_PATH = Path("dataset")
-SMILE_PATH = DATASET_PATH / "smile"
-NO_SMILE_PATH = DATASET_PATH / "nosmile"
-
-# To create directory if they don't exist already, create missing parents if needed
-SMILE_PATH.mkdir(parents=True, exist_ok=True)
-NO_SMILE_PATH.mkdir(parents=True, exist_ok=True)
-
-
-# AUtomate spliting the data
-# To create train/val/test datasets
 DATA_PATH = Path("data")
+
+# To create train/val/test datasets
 TRAIN_DATA_PATH = DATA_PATH / "train"
 VAL_DATA_PATH = DATA_PATH / "val"
 TEST_DATA_PATH = DATA_PATH / "test"
@@ -32,7 +23,7 @@ for dirs in [TRAIN_DATA_PATH, VAL_DATA_PATH, TEST_DATA_PATH]:
     for label in LABELS:
         (dirs / label).mkdir(parents=True, exist_ok=True)
 
-# https://docs.python.org/3/library/shutil.html
+
 # To split the dataset
 def split_dataset(labels):
     is_small_to_split = False
@@ -68,25 +59,3 @@ def split_dataset(labels):
             print(f"The total number of '{label}' images are too small to split, \n")
     
     return is_small_to_split
-
-
-def creat_dir(frame, faces):
-    is_proceed = False
-    # To save detected faces
-    with open(DATASET_PATH / "labels.csv", mode="a", newline="") as csvfile:
-        label_writer = csv.writer(csvfile)
-        selected_key = cv2.waitKey(1) & 0xFF
-
-        if selected_key == ord('s') or selected_key == ord('a'):
-            for (x, y, w, h) in faces:
-                face = frame[y:y+h, x:x+w]
-                filename = f"face_{int(time.time())}.jpg"
-                label = "smile" if selected_key == ord('s') else 'nosmile'
-                path = SMILE_PATH / filename if selected_key == ord('s') else NO_SMILE_PATH /filename
-                cv2.imwrite(str(path), face)
-
-                # To write the label in a CSV file
-                label_writer.writerow([filename, label])
-
-        if selected_key == ord('q'):
-            return is_proceed
