@@ -7,7 +7,6 @@ import time
 from pathlib import Path
 import numpy as np
 import cv2
-import matplotlib.pyplot as plt
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
@@ -20,31 +19,36 @@ DATA_PATH = Path("data")
 
 # Directories for train/validation/test datasets
 TRAIN_DATA_PATH = DATA_PATH / "train"
-# VAL_DATA_PATH = DATA_PATH / "val"
-# TEST_DATA_PATH = DATA_PATH / "test"
 LABELS = ["smile", "nosmile"]
-
-# Create directories if they do not exist already
-# for dirs in [TRAIN_DATA_PATH, VAL_DATA_PATH, TEST_DATA_PATH]: 
-#     for label in LABELS:
-#         (dirs / label).mkdir(parents=True, exist_ok=True)
 
 for label in LABELS:
         (TRAIN_DATA_PATH / label).mkdir(parents=True, exist_ok=True)
 
-
 IMG_SIZE = 180
 
 # save time, memory, and computing resources by resizing and rescaling images before training
-def resize_rescale_images(image):
+def resize_images(image):
     """
     Resize images to the IMG_SIZE constant for shape consistent and rescale pixel values.
     """
     resize_and_rescale = tf.keras.Sequential([
         layers.Resizing(IMG_SIZE, IMG_SIZE), 
+    ])
+    result = resize_and_rescale(image)
+    return result
+
+
+def resize_rescale_images(image):
+    """
+    Resize images to the IMG_SIZE constant for shape consistent and rescale pixel values.
+    """
+    image = tf.cast(image, tf.float32)
+    resize_and_rescale = tf.keras.Sequential([
+        layers.Resizing(IMG_SIZE, IMG_SIZE), 
         layers.Rescaling(1./255)
     ])
     result = resize_and_rescale(image)
+    
     return result
 
 
@@ -81,14 +85,14 @@ def save_augmented_images():
 
         for image_path in selected_images:  # Select only half of the images
             image = cv2.imread(str(image_path))
-            image = resize_rescale_images(image)
+            image = resize_images(image)
 
             # Skip unreadable images
             if image is None:
                 continue
 
             # Add batch dimension
-            image = np.expand_dims(img, axis=0)
+            image = np.expand_dims(image, axis=0)
             augmented_image = data_augmentation(image)
             
             # Convert back to the original shape
