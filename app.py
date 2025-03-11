@@ -1,3 +1,10 @@
+"""
+Main Application Script for Webcam-Based Face Detection and Dataset Creation
+
+This script integrates functionalities from various modules to capture webcam video, detect faces,
+create labeled datasets, and split data into training, validation, and testing sets.
+"""
+
 import cv2
 import sys
 from src.face_detection import video_capture, haarcascade_classifier, face_detector, draw_rectangle, preprocessing_frame
@@ -50,7 +57,7 @@ if __name__ == "__main__":
 
         # To split the dataset
         res = split_dataset(LABELS)
-        
+
         if res:
             break
         
