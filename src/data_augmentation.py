@@ -38,6 +38,8 @@ def data_augmentation(image):
         layers.RandomFlip("horizontal_and_vertical"), # Randomly flip the image
         layers.RandomRotation(0.1), # Randomly rotate the image
         layers.RandomZoom(0.1), # Randomly zoom the image
+        layers.RandomContrast(0.1) # Randomly adjust the contrast
+
     ])
     result = data_augmentation(image)
     return result
