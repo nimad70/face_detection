@@ -37,20 +37,22 @@ def split_dataset(labels):
     """
     is_small_to_split = True
 
+    # Define the split ratios, 60% training, 20% validation, 20% testing
+    train_ratio = 0.6
+    val_ratio = 0.2
+
     for label in labels:
         # Fetch and shuffle image files from the dataset directory
-        # Define the split ratios
-        train_ratio = 0.6
-        val_ratio = 0.2
-        # test_ratio = 0.2
+        image_files = list((DATASET_PATH / label).glob("*.jpg")) 
+        random.shuffle(image_files)
 
-        image_files = list((DATASET_PATH / label).glob("*.jpg")) # Retrieved the image files 
-        random.shuffle(image_files) # shuffle the images randomly
-        len_all_images = len(image_files) # Get the total number of images
+        # Get the total number of images
+        len_all_images = len(image_files)
         print(f"Total {label} images: {len_all_images}")
 
-        train_count = int(len(image_files) * train_ratio) # Calculate the number of training images
-        val_count = int(len(image_files) * val_ratio) # Calculate the number of validation images
+        # Calculate the number of training/validation images
+        train_count = int(len(image_files) * train_ratio) 
+        val_count = int(len(image_files) * val_ratio)
 
         # Split the images into training, validation, and test sets if there are more than 5 images
         if len_all_images > 5:
@@ -62,7 +64,8 @@ def split_dataset(labels):
                 else:
                     destination_path = TEST_DATA_PATH / label / image.name
 
-                shutil.copy(str(image), str(destination_path)) # Copy the image to the destination path
+                # Copy the image to the destination path
+                shutil.copy(str(image), str(destination_path))
         else:
             is_small_to_split = False
             print(f"The total number of '{label}' images are too small to split, \n")
