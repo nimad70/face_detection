@@ -10,6 +10,7 @@ import sys
 from src.face_detection import video_capture, haarcascade_classifier, face_detector, draw_rectangle, preprocessing_frame
 from src.face_detection_multi_threading import start_threads
 from src.dataset_creation import split_dataset, LABELS
+from src.data_augmentation import save_augmented_images
 
 
 def main():
@@ -68,3 +69,6 @@ if __name__ == "__main__":
         print('-' * len(warning_text))
         
     print("Smile and Non-smile datasets are splited")
+
+    save_augmented_images()
+    print("Augmented images are saved to the corresponding training datasets")
