@@ -11,6 +11,7 @@ from src.face_detection import video_capture, haarcascade_classifier, face_detec
 from src.face_detection_multi_threading import start_threads
 from src.dataset_creation import split_dataset, LABELS
 from src.data_augmentation import save_augmented_images
+from src.model_training import train_model, fine_tune_model
 
 
 def main():
@@ -72,3 +73,9 @@ if __name__ == "__main__":
 
     save_augmented_images()
     print("Augmented images are saved to the corresponding training datasets")
+
+    # Train the model
+    train_model()
+
+    # Fine-tune the model
+    fine_tune_model()
