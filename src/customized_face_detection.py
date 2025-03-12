@@ -1,4 +1,9 @@
-# new_face_detection.py
+"""
+Real-Time Face Detection and Smile Classification
+
+This script captures video frames, detects faces, and classifies them as 'Smiling' or 'Not Smiling' 
+using a pre-trained deep learning model (MobileNetV2).
+"""
 import cv2
 import tensorflow as tf
 import numpy as np
@@ -10,6 +15,16 @@ IMG_SIZE = 224
 
 
 def customized_face_detection():
+    """
+    Performs real-time face detection and smile classification.
+
+    This function captures video frames from the webcam, detects faces using 
+    the Haar cascade classifier, and classifies them using a pre-trained 
+    deep learning model (MobileNetV2). The detected faces are outlined, and their labels 
+    ('Smiling' or 'Not Smiling') are displayed on the screen.
+
+    The process continues in a loop until the user presses 'q' to exit.
+    """
     is_fine_tuned_model = True
     model = load_model(is_fine_tuned_model)
 
