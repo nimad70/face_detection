@@ -1,3 +1,10 @@
+"""
+Face Detection Utility Module
+
+This module provides utility functions for webcam initialization, face detection using Haar Cascade classifiers,
+frame preprocessing, bounding box scaling, and visualization of detected faces.
+"""
+
 import cv2
 import sys
 

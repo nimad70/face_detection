@@ -1,10 +1,30 @@
+"""
+Real-time Webcam Face Detection and Dataset Collection
+
+This script captures live video from the user's webcam, detects faces using OpenCV's Haar Cascade classifier, 
+processes frames in a multithreaded pipeline, and saves detected faces into separate datasets labeled as "smile" or "nosmile" based on user input. 
+Labels are recorded in a CSV file for future use in image processing tasks.
+"""
 import cv2
 import sys
 import queue
 import threading
+from pathlib import Path
+import csv
+import time
 
 
-# Milti-Threading/Processing
+# Define the path to save the dataset
+DATASET_PATH = Path("dataset")
+SMILE_PATH = DATASET_PATH / "smile"
+NO_SMILE_PATH = DATASET_PATH / "nosmile"
+
+# Create directory if they do not exist already
+SMILE_PATH.mkdir(parents=True, exist_ok=True)
+NO_SMILE_PATH.mkdir(parents=True, exist_ok=True)
+
+
+# Queues for multi-Threading
 frame_queue = queue.Queue(maxsize=1) # Queue for raw frames
 gray_queue = queue.Queue(maxsize=1) # Queue for preprocessed grayscale frames
 faces_queue = queue.Queue(maxsize=1) # Queue for deteceted faces
@@ -38,7 +58,7 @@ def haarcascade_classifier():
     Load the Haar Cascade classifier for face detection.
     
     Returns:
-        face_cascade_classifier (cv2.CascadeClassifier): Preloaded face detection classifier.
+        face_cascade_classifier (cv2.CascadeClassifier): loaded the face detection classifier.
     """
     face_cascade_classifier = cv2.CascadeClassifier(
         cv2.data.haarcascades + 'haarcascade_frontalface_default.xml'
@@ -133,9 +153,25 @@ def face_detection(gray_queue, faces_queue, face_cascade_classifier):
                 faces_queue.put((frame, scaled_faces))
 
 
+def display_menu():
+    """
+    Displays user interaction options.
+    """
+    print("\nThese are options you can choose from: \n\n"
+    "1. Press 'q' to quit\n"
+    "2. Press 's' to save the detected faces\n"
+    "3. Press 'a' to save the detected faces without smile\n")
+
+
 def start_threads():
     """
-    Start the video capture, frame processing, and face detection threads.
+    Initializes and start the video capture, frame processing, and face detection threads.
+    three separate threads for:
+    1. Capturing frames from the webcam.
+    2. Processing frames (grayscale conversion, resizing, enhancing, and noise reduction).
+    3. Detecting faces in the processed frames.
+
+    The threads continuously run until terminated.
     """
     cap = video_capture()
     face_cascade_classifier = haarcascade_classifier()
@@ -165,25 +201,40 @@ def start_threads():
     frame_process_thread.start()
     face_detection_thread.start()
 
+    display_menu()
 
-    # To display the final frames
     while True:
-        # Retrieve the frame and detected faces
+        # To display the final frames
         if not faces_queue.empty():
             frame, faces = faces_queue.get()
 
-            # Draw a bounding box around the detected faces
             for (x, y, w, h) in faces:
                 cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
             
-            # Display the resulting frame
             cv2.imshow('Webcam face detection', frame)
 
-        # Exit if the user presses 'q'
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break   
+        # To save detected faces
+        with open(DATASET_PATH / "labels.csv", mode="a", newline="") as csvfile:
+            label_writer = csv.writer(csvfile) # Create a CSV writer object
+            selected_key = cv2.waitKey(1) & 0xFF # Wait for the user to press a key
+            
+            # To save the detected faces inside smile/nosmile directories
+            if selected_key == ord('s') or selected_key == ord('a'):
+                for (x, y, w, h) in faces:
+                    face = frame[y:y+h, x:x+w] # Crop the detected face
+                    filename = f"face_{int(time.time())}.jpg" # Create a unique filename
+                    label = "smile" if selected_key == ord('s') else 'nosmile' # Assign the label
+                    # Save the face in the corresponding directory
+                    path = SMILE_PATH / filename if selected_key == ord('s') else NO_SMILE_PATH /filename
+                    cv2.imwrite(str(path), face) # Save the face image
 
-    # Release the video capture object
-    cap.release()
-    # Close all windows
-    cv2.destroyAllWindows()
+                    # write the label in a CSV file
+                    label_writer.writerow([filename, label])
+
+            # Exit if the user presses 'q'
+            if selected_key == ord('q'):
+                break
+
+    cap.release() # Release the video capture object
+    cv2.destroyAllWindows() # Close all windows
+
