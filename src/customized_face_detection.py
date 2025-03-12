@@ -26,6 +26,15 @@ def customized_face_detection():
         detected_faces = face_detector(face_classifier, processed_frame)
         scaled_faces = scale_bounding_box(frame, detected_faces)
 
+        for (x, y, w, h) in scaled_faces:
+            face_roi = frame[y:y+h, x:x+w] # Region of interest
+            face_resized = cv2.resize(face_roi, (IMG_SIZE, IMG_SIZE))
+            
+            # Add batch dimension for model prediction (300, 300, 3) -> (1, 300, 300, 3) 
+            face_expanded = np.expand_dims(face_resized, axis=0)
+
+            prediction = model.predict(face_expanded) # Make prediction
+            
         cv2.imshow("Smile Detection", frame)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
