@@ -95,3 +95,18 @@ def prepare(ds, shuffle=False, augment=False):
     return ds.prefetch(buffer_size=AUTOTUNE)
 
 
+def preprocessed_data():
+    """
+    Load the dataset and apply pre-processing.
+    
+    Returns:
+        train_ds (tf.data.Dataset): Preprocessed training dataset.
+        val_ds (tf.data.Dataset): Preprocessed validation dataset.
+        test_ds (tf.data.Dataset): Preprocessed testing dataset.
+    """
+    train_ds, val_ds, test_ds = load_data()
+    train_ds = prepare(train_ds, shuffle=True, augment=True)
+    val_ds = prepare(val_ds)
+    test_ds = prepare(test_ds)
+
+    return train_ds, val_ds, test_ds
