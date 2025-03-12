@@ -1,5 +1,9 @@
 """
-Model training script
+Model Training and fine-tuning Script for Smile Detection
+
+This script trains a binary classification model using the MobileNetV2 architecture.
+It includes data preprocessing, model building, training, and fine-tuning functionalities.
+
 """
 
 import numpy as np
@@ -30,11 +34,10 @@ for dirs in [TRAIN_DATA_PATH, VAL_DATA_PATH, TEST_DATA_PATH]:
 IMG_SIZE = 224
 BATCH_SIZE = 32
 EPOCHS = 10
-EPOCHS_FUNE_TUNE = 10
+EPOCHS_FINE_TUNE = 10
 AUTOTUNE = tf.data.AUTOTUNE # To allow tensflow to automatically tune the buffer size for optimal performance
 
 
-# Loading data from the dataset directory
 def load_data():
     """
     Load the dataset from the dataset directory.
@@ -70,6 +73,17 @@ def load_data():
 
 # Apply data pre-processing to process train, valid, and test sets
 def prepare(ds, shuffle=False, augment=False):
+    """
+    Preprocesses the dataset by resizing, shuffling, and applying augmentations.
+
+    Args:
+        ds (tf.data.Dataset): Input dataset.
+        shuffle (bool, optional): Whether to shuffle the dataset. Defaults to False.
+        augment (bool, optional): Whether to apply data augmentation. Defaults to False.
+
+    Returns:
+        tf.data.Dataset: Preprocessed dataset.
+    """
     # Resize datasets
     ds = ds.map(lambda x, y: (tf.image.resize(x, (IMG_SIZE, IMG_SIZE)), y), num_parallel_calls=AUTOTUNE)
 
@@ -78,7 +92,7 @@ def prepare(ds, shuffle=False, augment=False):
 
     if augment:
 
-        # Needed to apply crop to each image 
+        # Apply crop to each image of the batch
         ds = ds.map(lambda x, y: (tf.map_fn(lambda img: tf.image.random_crop(img, [IMG_SIZE, IMG_SIZE, 3]), x), y),num_parallel_calls=AUTOTUNE)
         
         # Randomly flip images horizontally
@@ -117,11 +131,12 @@ def preprocessed_data():
     return train_ds, val_ds, test_ds
 
 
-# Load the pre-trained base model to extend it to load alternative models
-# Load the pre-trained MobileNetV2 model
 def load_base_model(is_fine_tuned=False):
     """
     Load the pre-trained MobileNetV2 model.
+
+    Args:
+        is_fine_tuned (bool, optional): Whether to enable fine-tuning. Defaults to False.
     
     Returns:
         base_model (tf.keras.Model): Pre-trained MobileNetV2 model.
@@ -135,10 +150,10 @@ def load_base_model(is_fine_tuned=False):
     print(f"Total number of the base model layers: {len(base_model.layers)}")
 
     if is_fine_tuned:
-        # Fine-tune the base model
+        # Enable fine-tuning
         base_model.trainable = True
     else:
-        # Freeze all the layers of the base model
+        # Freeze layers
         base_model.trainable = False
 
     return base_model
@@ -146,10 +161,13 @@ def load_base_model(is_fine_tuned=False):
 
 def build_model(is_fine_tuned):
     """
-    Build, train, and save the model.
-    
+    Builds the model using the base MobileNetV2 architecture.
+
+    Args:
+        is_fine_tuned (bool, optional): Whether to fine-tune the model. Defaults to False.
+
     Returns:
-        history_initial: Training history.
+        history_initial (tf.keras.Model): The compiled model.
     """
     base_model = load_base_model(is_fine_tuned)
 
@@ -168,11 +186,8 @@ def train_model():
     """
     Train the model.
     
-    Args:
-        model (tf.keras.Model): The model to be trained.
-    
     Returns:
-        history_initial: Training history.
+        history_initial (tf.keras.callbacks.History): Training history.
     """
     train_ds, val_ds, test_ds = preprocessed_data()
     model = build_model(is_fine_tuned=False)
@@ -194,7 +209,7 @@ def train_model():
 
         model.summary()
 
-        # Save the trained model to Google Drive
+        # Save the trained model to corresponding directory
         model_save_path = MODEL_PATH / "smile_detection_model.h5"
         model.save(model_save_path)
         print(f"Model saved at {model_save_path}")
@@ -204,10 +219,10 @@ def train_model():
 
 def fine_tune_model():
     """
-    Fine-tune the model.
+    ine-tunes the pre-trained model by unfreezing part of the layers.
     
     Returns:
-        history_fine_tune: Fine-tuning history.
+        history_fine_tune (tf.keras.callbacks.History): Fine-tuning history.
     """
     train_ds, val_ds, test_ds = preprocessed_data()
     model = build_model(is_fine_tuned=True)
@@ -227,12 +242,12 @@ def fine_tune_model():
         history_fine_tune = model.fit(
             train_ds,
             validation_data=val_ds,
-            epochs=EPOCHS_FUNE_TUNE
+            epochs=EPOCHS_FINE_TUNE
         )
 
         model.summary()
 
-        # Save the trained model to Google Drive
+        # Save the fine-tuned model to corresponding directory
         model_save_path = MODEL_PATH / "smile_detection_fine_tuned_model.h5"
         model.save(model_save_path)
         print(f"Model saved at {model_save_path}")
