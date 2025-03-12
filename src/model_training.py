@@ -27,6 +27,7 @@ for dirs in [TRAIN_DATA_PATH, VAL_DATA_PATH, TEST_DATA_PATH]:
 
 IMG_SIZE = 256
 BATCH_SIZE = 32
+EPOCHS = 10
 
 # To allow tensflow to automatically tune the buffer size for optimal performance
 AUTOTUNE = tf.data.AUTOTUNE
@@ -110,3 +111,55 @@ def preprocessed_data():
     test_ds = prepare(test_ds)
 
     return train_ds, val_ds, test_ds
+
+
+# Load the pre-trained base model to extend it to load alternative models
+def load_base_model():
+    """
+    Load the pre-trained MobileNetV2 model.
+    
+    Returns:
+        base_model (tf.keras.Model): Pre-trained MobileNetV2 model.
+    """
+    base_model = keras.applications.MobileNetV2(
+        input_shape=(IMG_SIZE, IMG_SIZE, 3),
+        include_top=False,
+        weights="imagenet"
+    )
+
+    # Freeze all the layers of the base model
+    base_model.trainable = False
+
+    return base_model
+
+
+# Building the model
+def build_model():
+    train_ds, val_ds, test_ds = preprocessed_data()
+    base_model = load_base_model()
+    model = keras.Sequential([
+        base_model,
+        layers.GlobalAveragePooling2D(), # Convert features to vectors
+        layers.Dense(256, activation="relu"),
+        layers.Dropout(0.5),
+        layers.Dense(2, activation="sigmoid") # Binary classification, smile and nosmile
+    ])
+
+    model.compile(
+        optimizer=keras.optimizers.Adam(learning_rate=0.0001),
+        loss="binary_crossentropy",
+        metrics=["accuracy"]
+    )
+
+    history_initial = model.fit(
+        train_ds,
+        validation_data=val_ds,
+        epochs=EPOCHS
+    )
+
+    model.summary()
+    model.save("smile_detection_model.h5")
+    print("Model saved as smile_detection_model.h5")
+
+
+
