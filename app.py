@@ -52,39 +52,69 @@ def main():
     cv2.destroyAllWindows()
 
 
+def show_menu():
+    print("\nPlease select an option from the menu:")
+    print("1. Capture face")
+    print("2. Capture and Split Dataset")
+    print("3. Save Augmented Images")
+    print("4. Train Model")
+    print("5. Fine-tune Model")
+    print("6. Evaluate Model")
+    print("7. Real-time Face Detection and Smile Classification")
+    print("8. Exit")
+
+
 if __name__ == "__main__":
-    # main()
-    # start_threads()
-    is_splited = True
-    while is_splited:
-        start_threads()
+    while True:
+        show_menu()
+        choice = input("Enter your choice (1-8): ")
 
-        # To split the dataset
-        res = split_dataset(LABELS)
+        if choice == "1":
+            main()
+        
+        elif choice == "2":
+            is_splited = True
+            while is_splited:
+                start_threads()
+                res = split_dataset(LABELS) # Split the dataset
+                if res:
+                    print("Smile and Non-smile datasets are splited")
+                    break
+                warning_text = "*WARNING: Please take at least 6 shots per each category to add to the dataset"
+                print('-' * len(warning_text))
+                print(f"{warning_text}")
+                print('-' * len(warning_text))
+        
+        elif choice == "3":
+            save_augmented_images()
+            print("Augmented images are saved to the corresponding training datasets")
 
-        if res:
+        elif choice == "4":
+            # Train the model
+            train_model()
+            print("Model training is completed")
+        
+        elif choice == "5":
+            # Fine-tune the model
+            fine_tune_model()
+            print("Model fine-tuning is completed")
+
+        elif choice == "6":
+            # Evaluate the model
+            display_accuracy_metrics(is_fine_tuned=True)
+            plot_confusuion_matrix()
+            print("Model evaluation is completed")
+        
+        elif choice == "7":
+            # Perform real-time face detection and smile classification
+            customized_face_detection()
+
+        elif choice == "8":
+            print("Exiting the application!")
             break
         
-        warning_text = "*WARNING: Please take at least 6 shots per each category to add to the dataset"
-        
-        print('-' * len(warning_text))
-        print(f"{warning_text}")
-        print('-' * len(warning_text))
-        
-    print("Smile and Non-smile datasets are splited")
-
-    save_augmented_images()
-    print("Augmented images are saved to the corresponding training datasets")
-
-    # Train the model
-    train_model()
-
-    # Fine-tune the model
-    fine_tune_model()
-
-    # Evaluate the model
-    display_accuracy_metrics(is_fine_tuned=True)
-    plot_confusuion_matrix()
-
-    # Perform real-time face detection and smile classification
-    customized_face_detection()
+        else:
+            invalid_option_text = "Invalid choice. Please select a valid option between 1 to 8."
+            print('-' * len(invalid_option_text))
+            print(f"{invalid_option_text}")
+            print('-' * len(invalid_option_text))
