@@ -13,6 +13,7 @@ from src.dataset_creation import split_dataset, LABELS
 from src.data_augmentation import save_augmented_images
 from src.model_training import train_model, fine_tune_model
 from src.model_evaluation import display_accuracy_metrics, plot_confusuion_matrix
+from src.customized_face_detection import customized_face_detection
 
 
 def main():
@@ -32,12 +33,12 @@ def main():
 
         # If the frame is not captured, then break the loop
         if not res:
-            print("Fail to capture frames")
+            print("Failed to capture frames")
             break
 
-        processed_frame = preprocessing_frame(frame)
-        classifier = haarcascade_classifier()
-        detected_faces = face_detector(classifier, processed_frame)
+        preprocessed_frame = preprocessing_frame(frame)
+        face_classifier = haarcascade_classifier()
+        detected_faces = face_detector(face_classifier, preprocessed_frame)
         draw_rectangle(frame, detected_faces)
 
         cv2.imshow("Webcam", frame) # Display the captured frame
@@ -84,3 +85,6 @@ if __name__ == "__main__":
     # Evaluate the model
     display_accuracy_metrics(is_fine_tuned=True)
     plot_confusuion_matrix()
+
+    # Perform real-time face detection and smile classification
+    customized_face_detection()
