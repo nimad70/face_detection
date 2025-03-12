@@ -230,4 +230,11 @@ def fine_tune_model():
             epochs=EPOCHS_FUNE_TUNE
         )
 
+        model.summary()
+
+        # Save the trained model to Google Drive
+        model_save_path = MODEL_PATH / "smile_detection_fine_tuned_model.h5"
+        model.save(model_save_path)
+        print(f"Model saved at {model_save_path}")
+
         return history_fine_tune
