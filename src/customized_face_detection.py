@@ -2,10 +2,38 @@
 import cv2
 import tensorflow as tf
 import numpy as np
-from src.face_detection import video_capture, haarcascade_classifier, preprocessing_frame, scale_bounding_box
-from src.model_evaluation import load_model
+from face_detection import video_capture, haarcascade_classifier, preprocessing_frame, face_detector, scale_bounding_box
+from model_evaluation import load_model
 
+# Hyperparameters
+IMG_SIZE = 224
+
+
+def customized_face_detection():
+    is_fine_tuned_model = True
+    model = load_model(is_fine_tuned_model)
+
+    cap = video_capture()
+    face_classifier = haarcascade_classifier()
+
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            print("Failed to capture frame")
+            break
+
+        processed_frame = preprocessing_frame(frame)
+        detected_faces = face_detector(face_classifier, processed_frame)
+        scaled_faces = scale_bounding_box(frame, detected_faces)
+
+        cv2.imshow("Smile Detection", frame)
+
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+    cap.release()
+    cv2.destroyAllWindows()
 
 
 if __name__ == "__main__":
-    pass
+    customized_face_detection()
