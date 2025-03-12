@@ -20,6 +20,24 @@ def load_test_data():
         batch_size=BATCH_SIZE,
         shuffle=False
     )
+
     class_names = test_ds.class_names
     print(f"Test dataset class names: {class_names}")
+    
     return test_ds
+
+
+def load_model(is_fine_tuned_model=True):
+    if is_fine_tuned_model:
+        # For fine-tuned model evaluation
+        model = tf.keras.models.load_model("smile_detection_fine_tuned_model.h5")
+    else:
+        # Load the trained model
+        model = tf.keras.models.load_model("smile_detection_model.h5")
+    
+    return model
+
+
+
+if __name__ == "__main__":
+    test_ds = load_test_data()
