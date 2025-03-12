@@ -1,3 +1,9 @@
+"""
+Model Evaluation Script
+
+This script evaluates a trained and fine-tuned models by loading test data,
+making predictions, computing evaluation metrics, and displaying the confusion matrix.
+"""
 import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
@@ -8,14 +14,21 @@ from pathlib import Path
 DATA_PATH = Path("data")
 MODEL_PATH = Path("model")
 
-IMG_SIZE = 224
-BATCH_SIZE = 32
-
 # Load test dataset
 TEST_DATA_PATH = Path("data/test")
 
+# Hyperparameters
+IMG_SIZE = 224
+BATCH_SIZE = 32
+
 
 def load_test_data():
+    """
+    Loads the test dataset from the test directory.
+
+    Returns:
+        test_ds (tf.data.Dataset): The test dataset.
+    """
     test_ds = tf.keras.utils.image_dataset_from_directory(
         str(TEST_DATA_PATH),
         image_size=(IMG_SIZE, IMG_SIZE),
@@ -30,6 +43,15 @@ def load_test_data():
 
 
 def load_model(is_fine_tuned_model=True):
+    """
+    Loads a trained or fine-tuned model from storage.
+
+    Args:
+        is_fine_tuned_model (bool, optional): If True, loads the fine-tuned model. Defaults to True.
+
+    Returns:
+        model (tf.keras.Model): The loaded model.
+    """
     if is_fine_tuned_model:
         # For fine-tuned model evaluation
         model_save_path = MODEL_PATH / "smile_detection_fine_tuned_model.h5"
@@ -42,8 +64,16 @@ def load_model(is_fine_tuned_model=True):
     return model
 
 
-# Obtain true labels and predictions
 def model_prediction(is_fine_tuned_model=True):
+    """
+    Makes predictions on the test dataset using the specified model.
+
+    Args:
+        is_fine_tuned_model (bool, optional): If True, uses the fine-tuned model. Defaults to True.
+
+    Returns:
+        true_labels, predicted_labels (tuple): True labels and predicted labels.
+    """
     test_ds = load_test_data()
     model = load_model(is_fine_tuned_model)
 
@@ -59,9 +89,16 @@ def model_prediction(is_fine_tuned_model=True):
     return true_labels, predicted_labels
 
 
-# Calculate evaluation metrics
 def evaluate_model(is_fine_tuned=False):
-    # Retrieve true lables and predictions
+    """
+    Evaluates the model using accuracy, precision, recall, F1-score, and confusion matrix.
+
+    Args:
+        is_fine_tuned (bool, optional): If True, evaluates the fine-tuned model. Defaults to False.
+
+    Returns:
+        accuracy, precision, recall, f1, conf_matrix (tuple): Accuracy, precision, recall, F1-score, and confusion matrix.
+    """
     true_labels, predicted_labels = model_prediction(is_fine_tuned)
 
     if is_fine_tuned:
@@ -69,26 +106,22 @@ def evaluate_model(is_fine_tuned=False):
     else:
         print("Initial model evaluation:")
     
-    # (TP + TN) / Total Samples
-    accuracy = accuracy_score(true_labels, predicted_labels)
-
-    # model soundness: (TP / (TP + FP)
-    precision = precision_score(true_labels, predicted_labels)
-
-    # model completeness: (TP / (TP + FN))
-    recall = recall_score(true_labels, predicted_labels)
-
-    # Harmonic mean of precision and recal
-    f1 = f1_score(true_labels, predicted_labels)
-
-    # Generate Confusion Matrix
-    conf_matrix = confusion_matrix(true_labels, predicted_labels)
-
+    accuracy = accuracy_score(true_labels, predicted_labels) # (TP + TN) / Total Samples
+    precision = precision_score(true_labels, predicted_labels) # (TP / (TP + FP)
+    recall = recall_score(true_labels, predicted_labels) # (TP / (TP + FN))
+    f1 = f1_score(true_labels, predicted_labels) # Harmonic mean of precision and recal
+    conf_matrix = confusion_matrix(true_labels, predicted_labels) # Confusion matrix
 
     return accuracy, precision, recall, f1, conf_matrix
 
 
 def display_accuracy_metrics(is_fine_tuned=False):
+    """
+    Displays the accuracy, precision, recall, and F1-score of the model.
+
+    Args:
+        is_fine_tuned (bool, optional): If True, evaluates the fine-tuned model. Defaults to False.
+    """
     acc_metrics = ()
     acc_metrics = evaluate_model(is_fine_tuned)
     
@@ -99,11 +132,13 @@ def display_accuracy_metrics(is_fine_tuned=False):
     print(f"F1-Score: {acc_metrics[3]:.4f}")
 
 
-# Plot Confusion Matrix
 def plot_confusuion_matrix():
+    """
+    Plots the confusion matrix for the model evaluation.
+    """
     acc_metrics = []
     acc_metrics = evaluate_model()
-    # Plot Confusion Matrix
+    
     fig, ax = plt.subplots(figsize=(5, 5))
 
     class_names = ['Not Smiling', 'Smiling']
