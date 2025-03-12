@@ -178,4 +178,62 @@ def build_model():
     return history_initial
 
 
+def build_model():
+    """
+    Build, train, and save the model.
+    
+    Returns:
+        history_initial: Training history.
+    """
+    train_ds, val_ds, test_ds = preprocessed_data()
+    base_model = load_base_model()
+
+    model = keras.Sequential([
+        base_model,
+        layers.GlobalAveragePooling2D(),
+        layers.Dense(256, activation="relu"),
+        layers.Dropout(0.5),
+        layers.Dense(1, activation="sigmoid")  # Binary classification
+    ])
+
+    return model
+
+
+def train_model():
+    """
+    Train the model.
+    
+    Args:
+        model (tf.keras.Model): The model to be trained.
+    
+    Returns:
+        history_initial: Training history.
+    """
+    train_ds, val_ds, test_ds = preprocessed_data()
+    model = build_model()
+
+    if model is not None:
+        model.compile(
+            optimizer=keras.optimizers.Adam(learning_rate=0.0001),
+            loss="binary_crossentropy",
+            metrics=["accuracy"]
+        )
+        print("Start training the model....")
+
+        history_initial = model.fit(
+            train_ds,
+            validation_data=val_ds,
+            epochs=EPOCHS
+        )
+
+        model.summary()
+
+        # Save the trained model to Google Drive
+        model_save_path = MODEL_PATH / "smile_detection_model.h5"
+        model.save(model_save_path)
+        print(f"Model saved at {model_save_path}")
+
+    return history_initial
+
+
 
