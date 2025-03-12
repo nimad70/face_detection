@@ -99,6 +99,20 @@ def display_accuracy_metrics(is_fine_tuned=False):
     print(f"F1-Score: {acc_metrics[3]:.4f}")
 
 
+# Plot Confusion Matrix
+def plot_confusuion_matrix():
+    acc_metrics = []
+    acc_metrics = evaluate_model()
+    # Plot Confusion Matrix
+    fig, ax = plt.subplots(figsize=(5, 5))
+
+    class_names = ['Not Smiling', 'Smiling']
+    disp = ConfusionMatrixDisplay(confusion_matrix=acc_metrics[4], display_labels=class_names)
+    disp.plot(cmap='RdBu', ax=ax)
+    plt.title('Confusion Matrix')
+    plt.show()
+
+
 if __name__ == "__main__":
     display_accuracy_metrics(is_fine_tuned=True)
-    
+    plot_confusuion_matrix()
