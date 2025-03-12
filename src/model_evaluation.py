@@ -55,7 +55,45 @@ def model_prediction(is_fine_tuned_model=True):
     return true_labels, predicted_labels
 
 
+# Calculate evaluation metrics
+def evaluate_model():
+    # is_fine_tuned = True
+    is_fine_tuned = False
+
+    # Retrieve true lables and predictions
+    true_labels, predicted_labels = model_prediction(is_fine_tuned)
+
+    if is_fine_tuned:
+        print("Fine-tuned model evaluation:")
+    else:
+        print("Initial model evaluation:")
+    
+    # (TP + TN) / Total Samples
+    accuracy = accuracy_score(true_labels, predicted_labels)
+
+    # model soundness: (TP / (TP + FP)
+    precision = precision_score(true_labels, predicted_labels)
+
+    # model completeness: (TP / (TP + FN))
+    recall = recall_score(true_labels, predicted_labels)
+
+    # Harmonic mean of precision and recal
+    f1 = f1_score(true_labels, predicted_labels)
+
+    # Generate Confusion Matrix
+    conf_matrix = confusion_matrix(true_labels, predicted_labels)
+
+
+    return accuracy, precision, recall, f1, conf_matrix
 
 
 if __name__ == "__main__":
-    True_labels, Predicted_labels = model_prediction(is_fine_tuned_model=True)
+    acc_metrics = ()
+    acc_metrics = evaluate_model(is_fine_tuned=False)
+
+    # Display evaluation metrics
+    print(f"Accuracy: {acc_metrics[0]:.4f}")
+    print(f"Precision: {acc_metrics[1]:.4f}")
+    print(f"Recall: {acc_metrics[2]:.4f}")
+    print(f"F1-Score: {acc_metrics[3]:.4f}")
+    
