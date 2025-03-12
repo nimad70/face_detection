@@ -13,6 +13,7 @@ from pathlib import Path
 # Path Constants
 DATASET_PATH = Path("dataset")
 DATA_PATH = Path("data")
+MODEL_PATH = Path("model")
 
 # Directories for train/validation/test datasets
 TRAIN_DATA_PATH = DATA_PATH / "train"
@@ -25,12 +26,12 @@ for dirs in [TRAIN_DATA_PATH, VAL_DATA_PATH, TEST_DATA_PATH]:
     for label in LABELS:
         (dirs / label).mkdir(parents=True, exist_ok=True)
 
-IMG_SIZE = 256
+# Hyperparameters
+IMG_SIZE = 224
 BATCH_SIZE = 32
 EPOCHS = 10
+AUTOTUNE = tf.data.AUTOTUNE # To allow tensflow to automatically tune the buffer size for optimal performance
 
-# To allow tensflow to automatically tune the buffer size for optimal performance
-AUTOTUNE = tf.data.AUTOTUNE
 
 # Loading data from the dataset directory
 def load_data():
@@ -69,18 +70,20 @@ def load_data():
 # Apply data pre-processing to process train, valid, and test sets
 def prepare(ds, shuffle=False, augment=False):
     # Resize datasets
-    ds = ds.map(lambda x, y: (tf.image.resize(x, IMG_SIZE), y), num_parallel_calls=AUTOTUNE)
+    ds = ds.map(lambda x, y: (tf.image.resize(x, (IMG_SIZE, IMG_SIZE)), y), num_parallel_calls=AUTOTUNE)
 
     if shuffle:
         ds = ds.shuffle(1000)
 
-    ds = ds.batch(BATCH_SIZE)
-
     if augment:
+
+        # Needed to apply crop to each image 
+        ds = ds.map(lambda x, y: (tf.map_fn(lambda img: tf.image.random_crop(img, [IMG_SIZE, IMG_SIZE, 3]), x), y),num_parallel_calls=AUTOTUNE)
+        
         # Randomly flip images horizontally
         ds = ds.map(lambda x, y: (tf.image.random_flip_left_right(x), y), num_parallel_calls=AUTOTUNE) 
         
-        # Randomly rotate images
+        # Randomly adjust brightness of images
         ds = ds.map(lambda x, y: (tf.image.random_brightness(x, max_delta=0.3), y), num_parallel_calls=AUTOTUNE)
         
         # Randomly adjust the contrast of images
@@ -122,7 +125,7 @@ def load_base_model():
         base_model (tf.keras.Model): Pre-trained MobileNetV2 model.
     """
     base_model = keras.applications.MobileNetV2(
-        input_shape=(IMG_SIZE, IMG_SIZE, 3),
+        input_shape=(224, 224, 3),
         include_top=False,
         weights="imagenet"
     )
@@ -133,16 +136,22 @@ def load_base_model():
     return base_model
 
 
-# Building the model
 def build_model():
+    """
+    Build, train, and save the model.
+    
+    Returns:
+        history_initial: Training history.
+    """
     train_ds, val_ds, test_ds = preprocessed_data()
     base_model = load_base_model()
+
     model = keras.Sequential([
         base_model,
         layers.GlobalAveragePooling2D(), # Convert features to vectors
         layers.Dense(256, activation="relu"),
         layers.Dropout(0.5),
-        layers.Dense(2, activation="sigmoid") # Binary classification, smile and nosmile
+        layers.Dense(1, activation="sigmoid") # Binary classification, smile and nosmile
     ])
 
     model.compile(
@@ -151,6 +160,8 @@ def build_model():
         metrics=["accuracy"]
     )
 
+    print("Start training the model...")
+
     history_initial = model.fit(
         train_ds,
         validation_data=val_ds,
@@ -158,8 +169,11 @@ def build_model():
     )
 
     model.summary()
-    model.save("smile_detection_model.h5")
-    print("Model saved as smile_detection_model.h5")
+
+    # Save the trained model to the model directory
+    model_save_path = MODEL_PATH / "smile_detection_model.h5"
+    model.save(model_save_path)
+    print(f"Model saved as {model_save_path}")
 
     return history_initial
 
