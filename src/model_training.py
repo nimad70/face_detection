@@ -161,5 +161,7 @@ def build_model():
     model.save("smile_detection_model.h5")
     print("Model saved as smile_detection_model.h5")
 
+    return history_initial
+
 
 
