@@ -2,7 +2,8 @@
 Main Application Script for Webcam-Based Face Detection and Dataset Creation
 
 This script integrates functionalities from various modules to capture webcam video, detect faces,
-create labeled datasets, and split data into training, validation, and testing sets.
+create labeled datasets, apply data augmentation, train and fine-tune a model, evaluate model performance, 
+and perform real-time face detection and smile classification.
 """
 
 import cv2
@@ -53,6 +54,13 @@ def main():
 
 
 def show_menu():
+    """
+    Displays the main menu options for the user.
+
+    The user can select various functionalities such as capturing a face, 
+    dataset creation, data augmentation, model training, fine-tuning, evaluation, 
+    and real-time face detection.
+    """
     print("\nPlease select an option from the menu:")
     print("1. Capture face")
     print("2. Capture and Split Dataset")
@@ -70,9 +78,16 @@ if __name__ == "__main__":
         choice = input("Enter your choice (1-8): ")
 
         if choice == "1":
+            """
+            Captures images.
+            """
             main()
         
         elif choice == "2":
+            """
+            Captures images, splits them into training, validation, and testing datasets.
+            Ensures that a minimum of 6 images per category are taken before proceeding.
+            """
             is_splited = True
             while is_splited:
                 start_threads()
@@ -86,34 +101,52 @@ if __name__ == "__main__":
                 print('-' * len(warning_text))
         
         elif choice == "3":
+            """
+            Applies data augmentation techniques to the training dataset to enhance generalization.
+            """
             save_augmented_images()
             print("Augmented images are saved to the corresponding training datasets")
 
         elif choice == "4":
-            # Train the model
+            """
+            Trains the model using the prepared dataset.
+            """
             train_model()
             print("Model training is completed")
         
         elif choice == "5":
-            # Fine-tune the model
+            """
+            Fine-tunes the pre-trained model to improve performance.
+            """
             fine_tune_model()
             print("Model fine-tuning is completed")
 
         elif choice == "6":
-            # Evaluate the model
+            """
+            Evaluates the trained or fine-tuned model using accuracy, precision, recall, 
+            F1-score, and confusion matrix.
+            """
             display_accuracy_metrics(is_fine_tuned=True)
             plot_confusuion_matrix()
             print("Model evaluation is completed")
         
         elif choice == "7":
-            # Perform real-time face detection and smile classification
+            """
+            Runs real-time face detection and smile classification using a webcam feed.
+            """
             customized_face_detection()
 
         elif choice == "8":
+            """
+            Exits the application.
+            """
             print("Exiting the application!")
             break
         
         else:
+            """
+            Handles invalid menu selections.
+            """
             invalid_option_text = "Invalid choice. Please select a valid option between 1 to 8."
             print('-' * len(invalid_option_text))
             print(f"{invalid_option_text}")
