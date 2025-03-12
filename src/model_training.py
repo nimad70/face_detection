@@ -30,6 +30,7 @@ for dirs in [TRAIN_DATA_PATH, VAL_DATA_PATH, TEST_DATA_PATH]:
 IMG_SIZE = 224
 BATCH_SIZE = 32
 EPOCHS = 10
+EPOCHS_FUNE_TUNE = 10
 AUTOTUNE = tf.data.AUTOTUNE # To allow tensflow to automatically tune the buffer size for optimal performance
 
 
@@ -117,7 +118,8 @@ def preprocessed_data():
 
 
 # Load the pre-trained base model to extend it to load alternative models
-def load_base_model():
+# Load the pre-trained MobileNetV2 model
+def load_base_model(is_fine_tuned=False):
     """
     Load the pre-trained MobileNetV2 model.
     
@@ -125,68 +127,31 @@ def load_base_model():
         base_model (tf.keras.Model): Pre-trained MobileNetV2 model.
     """
     base_model = keras.applications.MobileNetV2(
-        input_shape=(224, 224, 3),
+        input_shape=(224, 224, 3),  # Compatible input size
         include_top=False,
         weights="imagenet"
     )
 
-    # Freeze all the layers of the base model
-    base_model.trainable = False
+    print(f"Total number of the base model layers: {len(base_model.layers)}")
+
+    if is_fine_tuned:
+        # Fine-tune the base model
+        base_model.trainable = True
+    else:
+        # Freeze all the layers of the base model
+        base_model.trainable = False
 
     return base_model
 
 
-def build_model():
+def build_model(is_fine_tuned):
     """
     Build, train, and save the model.
     
     Returns:
         history_initial: Training history.
     """
-    train_ds, val_ds, test_ds = preprocessed_data()
-    base_model = load_base_model()
-
-    model = keras.Sequential([
-        base_model,
-        layers.GlobalAveragePooling2D(), # Convert features to vectors
-        layers.Dense(256, activation="relu"),
-        layers.Dropout(0.5),
-        layers.Dense(1, activation="sigmoid") # Binary classification, smile and nosmile
-    ])
-
-    model.compile(
-        optimizer=keras.optimizers.Adam(learning_rate=0.0001),
-        loss="binary_crossentropy",
-        metrics=["accuracy"]
-    )
-
-    print("Start training the model...")
-
-    history_initial = model.fit(
-        train_ds,
-        validation_data=val_ds,
-        epochs=EPOCHS
-    )
-
-    model.summary()
-
-    # Save the trained model to the model directory
-    model_save_path = MODEL_PATH / "smile_detection_model.h5"
-    model.save(model_save_path)
-    print(f"Model saved as {model_save_path}")
-
-    return history_initial
-
-
-def build_model():
-    """
-    Build, train, and save the model.
-    
-    Returns:
-        history_initial: Training history.
-    """
-    train_ds, val_ds, test_ds = preprocessed_data()
-    base_model = load_base_model()
+    base_model = load_base_model(is_fine_tuned)
 
     model = keras.Sequential([
         base_model,
@@ -210,7 +175,7 @@ def train_model():
         history_initial: Training history.
     """
     train_ds, val_ds, test_ds = preprocessed_data()
-    model = build_model()
+    model = build_model(is_fine_tuned=False)
 
     if model is not None:
         model.compile(
@@ -218,6 +183,7 @@ def train_model():
             loss="binary_crossentropy",
             metrics=["accuracy"]
         )
+        
         print("Start training the model....")
 
         history_initial = model.fit(
@@ -234,6 +200,34 @@ def train_model():
         print(f"Model saved at {model_save_path}")
 
     return history_initial
+  
 
+def fine_tune_model():
+    """
+    Fine-tune the model.
+    
+    Returns:
+        history_fine_tune: Fine-tuning history.
+    """
+    train_ds, val_ds, test_ds = preprocessed_data()
+    model = build_model(is_fine_tuned=True)
 
+    fine_tune_at = 77 # [totale number of base_model layers (154) / 2]
 
+    if model is not None:
+        # Fine-tune only the last {fine_tune_at} layers
+        for layer in model.layers[:fine_tune_at]:
+            layer.trainable = False
+
+        model.compile(
+            optimizer=keras.optimizers.Adam(learning_rate=0.00001),
+            loss="binary_crossentropy",
+            metrics=["accuracy"]
+        )
+        history_fine_tune = model.fit(
+            train_ds,
+            validation_data=val_ds,
+            epochs=EPOCHS_FUNE_TUNE
+        )
+
+        return history_fine_tune
