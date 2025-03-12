@@ -38,6 +38,24 @@ def load_model(is_fine_tuned_model=True):
     return model
 
 
+# Obtain true labels and predictions
+def model_prediction(is_fine_tuned_model=True):
+    test_ds = load_test_data()
+    model = load_model(is_fine_tuned_model)
+
+    # Ectract the corresponding labels
+    true_labels = np.concatenate([y.numpy() for _, y in test_ds])
+
+    # Generate predictions for test images
+    predictions = model.predict(test_ds)
+
+    # Convert predcitions (probabilities) into binary labels (0 and 1) using 0.5 threshold
+    predicted_labels = (predictions.flatten() > 0.5).astype(int)
+
+    return true_labels, predicted_labels
+
+
+
 
 if __name__ == "__main__":
-    test_ds = load_test_data()
+    True_labels, Predicted_labels = model_prediction(is_fine_tuned_model=True)
