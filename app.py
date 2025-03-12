@@ -12,6 +12,7 @@ from src.face_detection_multi_threading import start_threads
 from src.dataset_creation import split_dataset, LABELS
 from src.data_augmentation import save_augmented_images
 from src.model_training import train_model, fine_tune_model
+from src.model_evaluation import display_accuracy_metrics, plot_confusuion_matrix
 
 
 def main():
@@ -79,3 +80,7 @@ if __name__ == "__main__":
 
     # Fine-tune the model
     fine_tune_model()
+
+    # Evaluate the model
+    display_accuracy_metrics(is_fine_tuned=True)
+    plot_confusuion_matrix()
