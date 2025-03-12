@@ -34,7 +34,11 @@ def customized_face_detection():
             face_expanded = np.expand_dims(face_resized, axis=0)
 
             prediction = model.predict(face_expanded) # Make prediction
-            
+            label = "Smiling" if prediction[0][0] > 0.5 else "Not Smiling" # Assign label based on prediction
+            color = (0, 255, 0) if label == "Smiling" else (0, 100, 255) # Assign green if smiling, otherwise orange
+            cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2) # draw rectangle around the detected smiling face
+            cv2.putText(frame, label, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 2) # put the text above the rectangle
+
         cv2.imshow("Smile Detection", frame)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
