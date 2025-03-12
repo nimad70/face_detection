@@ -6,6 +6,8 @@ from pathlib import Path
 
 # Constants
 DATA_PATH = Path("data")
+MODEL_PATH = Path("model")
+
 IMG_SIZE = 224
 BATCH_SIZE = 32
 
@@ -30,10 +32,12 @@ def load_test_data():
 def load_model(is_fine_tuned_model=True):
     if is_fine_tuned_model:
         # For fine-tuned model evaluation
-        model = tf.keras.models.load_model("smile_detection_fine_tuned_model.h5")
+        model_save_path = MODEL_PATH / "smile_detection_fine_tuned_model.h5"
+        model = tf.keras.models.load_model(model_save_path)
     else:
         # Load the trained model
-        model = tf.keras.models.load_model("smile_detection_model.h5")
+        model_save_path = MODEL_PATH / "smile_detection_model.h5"
+        model = tf.keras.models.load_model(model_save_path)
     
     return model
 
@@ -56,10 +60,7 @@ def model_prediction(is_fine_tuned_model=True):
 
 
 # Calculate evaluation metrics
-def evaluate_model():
-    # is_fine_tuned = True
-    is_fine_tuned = False
-
+def evaluate_model(is_fine_tuned=False):
     # Retrieve true lables and predictions
     true_labels, predicted_labels = model_prediction(is_fine_tuned)
 
@@ -87,13 +88,17 @@ def evaluate_model():
     return accuracy, precision, recall, f1, conf_matrix
 
 
-if __name__ == "__main__":
+def display_accuracy_metrics(is_fine_tuned=False):
     acc_metrics = ()
-    acc_metrics = evaluate_model(is_fine_tuned=False)
-
+    acc_metrics = evaluate_model(is_fine_tuned)
+    
     # Display evaluation metrics
     print(f"Accuracy: {acc_metrics[0]:.4f}")
     print(f"Precision: {acc_metrics[1]:.4f}")
     print(f"Recall: {acc_metrics[2]:.4f}")
     print(f"F1-Score: {acc_metrics[3]:.4f}")
+
+
+if __name__ == "__main__":
+    display_accuracy_metrics(is_fine_tuned=True)
     
