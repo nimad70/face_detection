@@ -87,10 +87,12 @@ cv_assignment/
 ├── model/                  # Trained and fine-tuned model files
 ├── report/                 # Final report documentation file
 ├── src                     # Python scripts
-├── app.py                  # Main script
+├── .gitignore              # files and directories to be ignored by Git
 ├── Dockerfile              # Docker container setup
+├── README.md               # Project documentation
+├── app.py                  # Main script
 ├── requirements.txt        # Project dependencies
-└── README.md               # Project documentation
+└── runapp.sh               # Bash script to check for camera and launch the app
 ```
 
 ## Technologies Used
