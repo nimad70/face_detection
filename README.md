@@ -65,6 +65,20 @@ pip install -r requirements.txt
 python app.py
 ```
 
+### Running with Bash Script
+An alternative way to run the application is by using the `runapp.sh` script, which checks for a connected camera before launching the application in Docker.
+
+```bash
+./runapp.sh
+```
+- If a camera is connected, the application launches inside Docker.
+- If no camera is detected, a warning message is displayed.
+
+Make sure to give execution permission to the script before running it:
+```bash
+chmod a+x runapp.sh
+```
+
 ## Application Functionalities
 The `app.py` script serves as the central control point for various functionalities. Different options can be selected by user via a menu.
 
