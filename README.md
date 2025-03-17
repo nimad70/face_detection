@@ -117,7 +117,6 @@ cv_assignment/
 
 ## Author
 - **Nima Daryabar**
-- Developed as part of the Junior CV Engineer Technical Assignment at Istituto Italiano di Tecnologia (IIT)
 
 ## License
 This project is currently private and does not have a license yet.
