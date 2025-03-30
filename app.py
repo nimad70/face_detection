@@ -7,13 +7,17 @@ and perform real-time face detection and smile classification.
 """
 
 from src.menu import show_menu
-from src.face_detection import main
+from src.haar_cascade_face_detector import haar_cascade_face_detector
+from src.resNet_face_detector import run_face_detection
+from src.mobileNet_object_detector import run_object_detection
 from src.face_detection_multi_threading import start_threads
 from src.dataset_creation import split_dataset, LABELS
 from src.data_augmentation import save_augmented_images
 from src.model_training import train_model, fine_tune_model
 from src.model_evaluation import display_accuracy_metrics, plot_confusuion_matrix
 from src.customized_face_detection import customized_face_detection
+
+# from src.ssd_face_detection import main
 
 
 if __name__ == "__main__":
@@ -23,11 +27,29 @@ if __name__ == "__main__":
 
         if choice == "1":
             """
-            Captures images.
+            Captures images. OpenCV Haar Cascade Face Detector
             """
-            main()
+            haar_cascade_face_detector()
         
         elif choice == "2":
+            """
+            Captures images. OpenCV DNN + ResNet-Based Face Detector
+            """
+            run_face_detection()
+        
+        elif choice == "3":
+            """
+            Captures images. Person detector (MobileNetSSD)
+            """
+            run_object_detection(is_object_detection=False)
+        
+        elif choice == "4":
+            """
+            Captures images. Object detector (MobileNetSSD)
+            """
+            run_object_detection(is_object_detection=True)
+
+        elif choice == "5":
             """
             Captures images, splits them into training, validation, and testing datasets.
             Ensures that a minimum of 6 images per category are taken before proceeding.
@@ -44,28 +66,31 @@ if __name__ == "__main__":
                 print(f"{warning_text}")
                 print('-' * len(warning_text))
         
-        elif choice == "3":
+        elif choice == "6":
+            print("6. Capture and Split Dataset (Multi-Multi-processing)")
+
+        elif choice == "7":
             """
             Applies data augmentation techniques to the training dataset to enhance generalization.
             """
             save_augmented_images()
             print("Augmented images are saved to the corresponding training datasets")
 
-        elif choice == "4":
+        elif choice == "8":
             """
             Trains the model using the prepared dataset.
             """
             train_model()
             print("Model training is completed")
         
-        elif choice == "5":
+        elif choice == "9":
             """
             Fine-tunes the pre-trained model to improve performance.
             """
             fine_tune_model()
             print("Model fine-tuning is completed")
 
-        elif choice == "6":
+        elif choice == "10":
             """
             Evaluates the trained or fine-tuned model using accuracy, precision, recall, 
             F1-score, and confusion matrix.
@@ -74,13 +99,13 @@ if __name__ == "__main__":
             plot_confusuion_matrix()
             print("Model evaluation is completed")
         
-        elif choice == "7":
+        elif choice == "11":
             """
             Runs real-time face detection and smile classification using a webcam feed.
             """
             customized_face_detection()
 
-        elif choice == "8":
+        elif choice == "12":
             """
             Exits the application.
             """
