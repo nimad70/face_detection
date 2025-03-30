@@ -7,6 +7,8 @@ frame preprocessing, bounding box scaling, and visualization of detected faces.
 
 import cv2
 import sys
+import time
+from src.utils import update_fps
 
 
 def video_capture():
@@ -125,6 +127,8 @@ def draw_rectangle(frame, detected_faces):
         frame (numpy.ndarray): The original video frame.
         detected_faces (list): List of detected face bounding boxes (x, y, w, h).
     """
+    prev_time = time.time() # Initialize the previous time for FPS calculation
+
     scaled_faces = scale_bounding_box(frame, detected_faces)
 
     for (x, y, w, h) in scaled_faces:
@@ -154,8 +158,9 @@ def main():
         face_classifier = haarcascade_classifier()
         detected_faces = face_detector(face_classifier, preprocessed_frame)
         draw_rectangle(frame, detected_faces)
+        update_fps(frame) # Update the FPS on the frame
 
-        cv2.imshow("Webcam", frame) # Display the captured frame
+        cv2.imshow("Haar Cascade Face Detection", frame) # Display the captured frame
 
         # Exit if the user presses 'q'
         if cv2.waitKey(1) & 0xFF == ord('q'):
