@@ -58,7 +58,6 @@ def draw_rectangle(frame, faces):
         cv2.putText(frame, label, (startX, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 1)
 
 
-
 def detect_faces(frame, net, confidence_threshold=0.5, img_size=(300, 300)):
     """
     Detect faces in a video frame using the MobileNetSSD model.
@@ -110,7 +109,6 @@ def run_face_detection():
         faces = detect_faces(frame, net, confidence_threshold, img_size)
         draw_rectangle(frame, faces)
 
-        
         cv2.imshow("MobileNetSSD Face Detection", frame)
         
         # Exit if the user presses 'q'
