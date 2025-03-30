@@ -6,8 +6,10 @@ It also supports GPU acceleration for faster processing.
 
 import cv2
 import numpy as np
-from utils import update_fps
-from config import resNetSSD_config
+# from utils import update_fps
+# from config import resNetSSD_config
+from src.utils import update_fps
+from src.config import resNetSSD_config
 
 # Initialize model
 def load_detector(prototxt, caffemodel, gpu_enabled):
