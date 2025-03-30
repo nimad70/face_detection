@@ -45,9 +45,9 @@ def load_detector(prototxt, caffemodel, gpu_enabled):
 
 def draw_rectangle(frame, objects, object_classes, colors, is_object_detection=False):
     """
-    Draws bounding boxes (rectangles) around detected faces on the original frame.
+    Draws bounding boxes (rectangles) around detected objects on the original frame.
     
-    Args:
+    Parameters:
         frame (numpy.ndarray): The original video frame.
         detected_faces (list): List of detected face bounding boxes (x, y, w, h).
     """
@@ -113,9 +113,9 @@ def detect_objects(frame, net, confidence_threshold=0.5, img_size=(300, 300)):
     return objects
         
 
-def run_face_detection(is_object_detection=False):
+def run_object_detection(is_object_detection=False):
     """
-    Run the face detection using the MobileNetSSD model.
+    Run the object detection using the MobileNetSSD model.
     """
     gpu_enabled, prototxt, caffemodel, confidence_threshold, img_size, object_classes, colors = mobileNetSSD_config()
     net = load_detector(prototxt, caffemodel, gpu_enabled)
@@ -145,7 +145,7 @@ if __name__ == "__main__":
     Main function to run the face detection script.
     """
     is_object_detection = True # Set to True for object detection, False for face detection
-    run_face_detection(is_object_detection=is_object_detection)
+    run_object_detection(is_object_detection=is_object_detection)
     
 
 
