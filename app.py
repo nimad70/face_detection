@@ -23,7 +23,7 @@ from src.customized_face_detection import customized_face_detection
 if __name__ == "__main__":
     while True:
         show_menu()
-        choice = input("Enter your choice (1-8): ")
+        choice = input("Enter your choice (1-12): ")
 
         if choice == "1":
             """
