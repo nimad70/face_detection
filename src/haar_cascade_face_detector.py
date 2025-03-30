@@ -131,8 +131,11 @@ def draw_rectangle(frame, detected_faces):
 
     scaled_faces = scale_bounding_box(frame, detected_faces)
 
-    for (x, y, w, h) in scaled_faces:
+    for i, (x, y, w, h) in enumerate(scaled_faces):
+        label = f"Face: {i+1}"
         cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
+        y_ = y - 15 if y - 15 > 15 else y + 15 # Adjust the y-coordinate for the label
+        cv2.putText(frame, label, (x, y_), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 255, 255), 1)
 
 
 def haar_cascade_face_detector():
