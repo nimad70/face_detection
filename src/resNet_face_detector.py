@@ -115,8 +115,9 @@ def run_face_detection():
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
+    # Release the webcam and close the window
     cap.release()
-    cv2.destroyAllWindows
+    cv2.destroyAllWindows()
 
 
 if __name__ == "__main__":
