@@ -129,3 +129,38 @@ def draw_rectangle(frame, detected_faces):
 
     for (x, y, w, h) in scaled_faces:
         cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
+
+
+def main():
+    """
+    Captures video from the webcam, detects faces, and displays the processed frames with bounding boxes from 
+    face_detection.py module.
+    
+    The function continuously reads frames from the webcam, preprocesses them, detects faces using Haar Cascade classifier,
+    and draws bounding boxes around detected faces. The video stream is displayed in a window, and the loop exits
+    when the user presses 'q'.
+    """
+    cap = video_capture()
+
+    while True:
+        res, frame = cap.read() # capture frames from the video source
+
+        # If the frame is not captured, then break the loop
+        if not res:
+            print("Failed to capture frames")
+            break
+
+        preprocessed_frame = preprocessing_frame(frame)
+        face_classifier = haarcascade_classifier()
+        detected_faces = face_detector(face_classifier, preprocessed_frame)
+        draw_rectangle(frame, detected_faces)
+
+        cv2.imshow("Webcam", frame) # Display the captured frame
+
+        # Exit if the user presses 'q'
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+    # Release the webcam and close the window
+    cap.release()
+    cv2.destroyAllWindows()
