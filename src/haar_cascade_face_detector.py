@@ -135,7 +135,7 @@ def draw_rectangle(frame, detected_faces):
         cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
 
 
-def main():
+def haar_cascade_face_detector():
     """
     Captures video from the webcam, detects faces, and displays the processed frames with bounding boxes from 
     face_detection.py module.
