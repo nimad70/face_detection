@@ -43,6 +43,22 @@ def load_detector(prototxt, caffemodel, gpu_enabled):
     return net
 
 
+def draw_rectangle(frame, faces):
+    """
+    Draws bounding boxes (rectangles) around detected faces on the original frame.
+    
+    Parameters:
+        frame (numpy.ndarray): The original video frame.
+        detected_faces (list): List of detected face bounding boxes (x, y, w, h).
+    """
+    for i, (startX, startY, endX, endY) in enumerate(faces):
+        cv2.rectangle(frame, (startX, startY), (endX, endY), (0, 255, 0), 1)
+        label = f"Face: {i+1}"
+        y = startY - 15 if startY - 15 > 15 else startY + 15
+        cv2.putText(frame, label, (startX, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 1)
+
+
+
 def detect_faces(frame, net, confidence_threshold=0.5, img_size=(300, 300)):
     """
     Detect faces in a video frame using the MobileNetSSD model.
@@ -92,13 +108,9 @@ def run_face_detection():
             break
     
         faces = detect_faces(frame, net, confidence_threshold, img_size)
+        draw_rectangle(frame, faces)
 
-        for i, (startX, startY, endX, endY) in enumerate(faces):
-            cv2.rectangle(frame, (startX, startY), (endX, endY), (0, 255, 0), 1)
-            label = f"Face: {i+1}"
-            y = startY - 15 if startY - 15 > 15 else startY + 15
-            cv2.putText(frame, label, (startX, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 1)
-
+        
         cv2.imshow("MobileNetSSD Face Detection", frame)
         
         # Exit if the user presses 'q'
