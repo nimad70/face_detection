@@ -11,6 +11,7 @@ from src.object_detection.haar_cascade_face_detector import haar_cascade_face_de
 from src.object_detection.resNet_face_detector import run_face_detection
 from src.object_detection.mobileNet_object_detector import run_object_detection
 from src.object_detection.customized_face_detection import customized_face_detection
+from src.multi_processing.multi_processing_main import multi_processing_main
 from src.multi_processing.face_detection_multi_threading import start_threads
 from src.dataset.dataset_creation import split_dataset, LABELS
 from src.dataset.data_augmentation import save_augmented_images
@@ -49,6 +50,12 @@ if __name__ == "__main__":
 
         elif choice == "5":
             """
+            Captures images, Face detection (ResNet/Multi-processing)
+            """
+            multi_processing_main()
+
+        elif choice == "6":
+            """
             Captures images, splits them into training, validation, and testing datasets.
             Ensures that a minimum of 6 images per category are taken before proceeding.
             """
@@ -64,31 +71,31 @@ if __name__ == "__main__":
                 print(f"{warning_text}")
                 print('-' * len(warning_text))
         
-        elif choice == "6":
+        elif choice == "7":
             print("6. Capture and Split Dataset (Multi-Multi-processing)")
 
-        elif choice == "7":
+        elif choice == "8":
             """
             Applies data augmentation techniques to the training dataset to enhance generalization.
             """
             save_augmented_images()
             print("Augmented images are saved to the corresponding training datasets")
 
-        elif choice == "8":
+        elif choice == "9":
             """
             Trains the model using the prepared dataset.
             """
             train_model()
             print("Model training is completed")
         
-        elif choice == "9":
+        elif choice == "10":
             """
             Fine-tunes the pre-trained model to improve performance.
             """
             fine_tune_model()
             print("Model fine-tuning is completed")
 
-        elif choice == "10":
+        elif choice == "11":
             """
             Evaluates the trained or fine-tuned model using accuracy, precision, recall, 
             F1-score, and confusion matrix.
@@ -97,13 +104,13 @@ if __name__ == "__main__":
             plot_confusuion_matrix()
             print("Model evaluation is completed")
         
-        elif choice == "11":
+        elif choice == "12":
             """
             Runs real-time face detection and smile classification using a webcam feed.
             """
             customized_face_detection()
 
-        elif choice == "12":
+        elif choice == "13":
             """
             Exits the application.
             """
