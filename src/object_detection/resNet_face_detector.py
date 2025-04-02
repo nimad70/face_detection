@@ -1,7 +1,8 @@
 """
-SSD Face Detection using MobileNetSSD model.
-This script captures video frames from a webcam, detects faces using the MobileNetSSD model, and displays the results in real-time.
-It also supports GPU acceleration for faster processing.
+ResNet Face Detector using OpenCV DNN module
+This script uses OpenCV's DNN module to perform face detection using a ResNet-based model.
+It captures video from the webcam, processes each frame to detect faces, and draws bounding boxes around detected faces.
+It also provides functionality to enable or disable GPU acceleration for the model.
 """
 
 import cv2
@@ -14,9 +15,15 @@ from src.utils.config import resNetSSD_config
 # Initialize model
 def load_detector(prototxt, caffemodel, gpu_enabled):
     """
-    Load the MobileNetSSD model for face detection.
+    Load the ResNet model for face detection.
+
+    Parameters:
+        prototxt (str): Path to the model's prototxt file.
+        caffemodel (str): Path to the model's caffemodel file.
+        gpu_enabled (bool): Flag to enable GPU acceleration.
+
     Returns:
-        net: Loaded MobileNetSSD model.
+        net: Loaded ResNet model.
     """
     if not prototxt.exists() or not caffemodel.exists():
         raise FileNotFoundError("MobileNetSSD model files are missing in the 'model/MobileNetSSD/' directory.")
@@ -45,11 +52,11 @@ def load_detector(prototxt, caffemodel, gpu_enabled):
 
 def draw_rectangle(frame, faces):
     """
-    Draws bounding boxes (rectangles) around detected faces on the original frame.
-    
+    Draw rectangles around detected faces in the video frame.
+
     Parameters:
-        frame (numpy.ndarray): The original video frame.
-        detected_faces (list): List of detected face bounding boxes (x, y, w, h).
+        frame (numpy.ndarray): The video frame to process.
+        faces (list): List of detected faces with bounding box coordinates.
     """
     for i, (startX, startY, endX, endY) in enumerate(faces):
         cv2.rectangle(frame, (startX, startY), (endX, endY), (0, 255, 0), 1)
@@ -60,14 +67,16 @@ def draw_rectangle(frame, faces):
 
 def detect_faces(frame, net, confidence_threshold=0.5, img_size=(300, 300)):
     """
-    Detect faces in a video frame using the MobileNetSSD model.
-    
+    Detect faces in the video frame using the ResNet model.
+
     Parameters:
         frame (numpy.ndarray): The video frame to process.
-        net: Loaded MobileNetSSD model.
-    
+        net: Loaded ResNet model.
+        confidence_threshold (float): Confidence threshold for face detection.
+        img_size (tuple): Size of the input image for the model.
+
     Returns:
-        people (list): List of detected faces with bounding box coordinates.
+        faces (list): List of detected faces with bounding box coordinates.
     """
     # Get frame dimensions
     height, width = frame.shape[:2] 
@@ -90,11 +99,12 @@ def detect_faces(frame, net, confidence_threshold=0.5, img_size=(300, 300)):
             faces.append((startX, startY, endX, endY))
     
     return faces
-        
+
 
 def run_face_detection():
     """
-    Run the face detection using the MobileNetSSD model.
+    Run the face detection script.
+    This function initializes the face detection model, captures video from the webcam,
     """
     gpu_enabled, prototxt, caffemodel, confidence_threshold, img_size = resNetSSD_config()
     net = load_detector(prototxt, caffemodel, gpu_enabled)
@@ -118,6 +128,8 @@ def run_face_detection():
     # Release the webcam and close the window
     cap.release()
     cv2.destroyAllWindows()
+
+
 
 
 if __name__ == "__main__":
