@@ -11,6 +11,7 @@ class VideoStream:
 
     def start(self):
         Thread(target=self.update, daemon=True).start()
+        return self
 
     def update(self):
         while not self.stopped:
