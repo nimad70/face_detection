@@ -18,7 +18,7 @@ def show_menu():
     print("4. Object detector (MobileNetSSD)")
     print("5. Face Detection (ResNet/Multi-processing)")
     print("6. Capture and Split Dataset (Multi-threading)")
-    print("7. Capture and Split Dataset (Multi-Multi-processing)")
+    print("7. Capture and Split Dataset (Multi-processing)")
     print("8. Save Augmented Images")
     print("9. Train Model")
     print("10. Fine-tune Model")
