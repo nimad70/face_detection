@@ -15,6 +15,12 @@ from src.utils.config import mobileNetSSD_config
 def load_detector(prototxt, caffemodel, gpu_enabled):
     """
     Load the MobileNetSSD model for face detection.
+
+    Parameters:
+        prototxt (str): Path to the Caffe model prototxt file.
+        caffemodel (str): Path to the Caffe model weights file.
+        gpu_enabled (bool): Flag to enable GPU acceleration.
+
     Returns:
         net: Loaded MobileNetSSD model.
     """
@@ -49,7 +55,10 @@ def draw_rectangle(frame, objects, object_classes, colors, is_object_detection=F
     
     Parameters:
         frame (numpy.ndarray): The original video frame.
-        detected_faces (list): List of detected face bounding boxes (x, y, w, h).
+        objects (list): List of detected object bounding boxes (x, y, w, h).
+        object_classes (list): List of object classes.
+        colors (list): List of colors for each class.
+        is_object_detection (bool): Flag to indicate if it's object detection or not.
     """
     if not is_object_detection:
         for ((startX, startY, endX, endY), confidence, class_id) in objects:
@@ -73,6 +82,8 @@ def detect_objects(frame, net, confidence_threshold=0.5, img_size=(300, 300)):
     Parameters:
         frame (numpy.ndarray): The video frame to process.
         net: Loaded MobileNetSSD model.
+        confidence_threshold (float): Minimum confidence threshold for detection.
+        img_size (tuple): Size of the input image for the model.
     
     Returns:
         objects (list): List of detected objects with bounding box coordinates.
@@ -116,6 +127,9 @@ def detect_objects(frame, net, confidence_threshold=0.5, img_size=(300, 300)):
 def run_object_detection(is_object_detection=False):
     """
     Run the object detection using the MobileNetSSD model.
+
+    Parameters:
+        is_object_detection (bool): Flag to indicate if it's object detection or not.
     """
     gpu_enabled, prototxt, caffemodel, confidence_threshold, img_size, object_classes, colors = mobileNetSSD_config()
     net = load_detector(prototxt, caffemodel, gpu_enabled)
