@@ -6,18 +6,16 @@ create labeled datasets, apply data augmentation, train and fine-tune a model, e
 and perform real-time face detection and smile classification.
 """
 
-from src.menu import show_menu
-from src.haar_cascade_face_detector import haar_cascade_face_detector
-from src.resNet_face_detector import run_face_detection
-from src.mobileNet_object_detector import run_object_detection
-from src.face_detection_multi_threading import start_threads
-from src.dataset_creation import split_dataset, LABELS
-from src.data_augmentation import save_augmented_images
-from src.model_training import train_model, fine_tune_model
-from src.model_evaluation import display_accuracy_metrics, plot_confusuion_matrix
-from src.customized_face_detection import customized_face_detection
-
-# from src.ssd_face_detection import main
+from src.utils.menu import show_menu
+from src.object_detection.haar_cascade_face_detector import haar_cascade_face_detector
+from src.object_detection.resNet_face_detector import run_face_detection
+from src.object_detection.mobileNet_object_detector import run_object_detection
+from src.object_detection.face_detection_multi_threading import start_threads
+from src.object_detection.customized_face_detection import customized_face_detection
+from src.dataset.dataset_creation import split_dataset, LABELS
+from src.dataset.data_augmentation import save_augmented_images
+from src.model_training.model_training import train_model, fine_tune_model
+from src.model_training.model_evaluation import display_accuracy_metrics, plot_confusuion_matrix
 
 
 if __name__ == "__main__":

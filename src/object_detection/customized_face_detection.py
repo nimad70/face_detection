@@ -7,8 +7,8 @@ using a pre-trained deep learning model (MobileNetV2).
 import cv2
 import tensorflow as tf
 import numpy as np
-from src.haar_cascade_face_detector import video_capture, haarcascade_classifier, preprocessing_frame, face_detector, scale_bounding_box
-from src.model_evaluation import load_model
+from src.object_detection.haar_cascade_face_detector import video_capture, haarcascade_classifier, preprocessing_frame, face_detector, scale_bounding_box
+from src.model_training.model_evaluation import load_model
 # from face_detection import video_capture, haarcascade_classifier, preprocessing_frame, face_detector, scale_bounding_box
 # from model_evaluation import load_model
 

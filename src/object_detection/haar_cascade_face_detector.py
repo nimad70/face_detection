@@ -8,7 +8,7 @@ frame preprocessing, bounding box scaling, and visualization of detected faces.
 import cv2
 import sys
 import time
-from src.utils import update_fps
+from src.utils.utils import update_fps
 
 
 def video_capture():
