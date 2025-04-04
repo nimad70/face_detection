@@ -187,6 +187,9 @@ docker-logs/
 docker-compose.override.yml
 container_data/
 
+# Directories
+dataset/
+data/
 
 # Ignore editor swap files
 *.swp
