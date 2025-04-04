@@ -43,6 +43,16 @@ if __name__ == "__main__":
                 print('-' * len(warning_text))
                 print(f"{warning_text}")
                 print('-' * len(warning_text))
+                try:
+                    exit_request = input("\nDo you want to exit? (y/n): ").strip().lower()
+                    if exit_request == 'y':
+                        print("Exiting the dataset creation...")
+                        is_splited = False
+                        break
+                    elif exit_request == 'n':
+                        print("Continuing to take more shots...")
+                except ValueError:
+                    print("Invalid input. Please enter 'y' or 'n'.")
         
         elif choice == "2":
             """
@@ -87,7 +97,7 @@ if __name__ == "__main__":
             """
             Exits the application.
             """
-            print("Thank you!")
+            print("\nThank you!")
             print("Exiting the application...")
             break
         
