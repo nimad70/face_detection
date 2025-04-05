@@ -191,6 +191,9 @@ container_data/
 dataset/
 data/
 
+# Image files and labels
+dataset/labels.csv
+
 # Ignore editor swap files
 *.swp
 .qodo
