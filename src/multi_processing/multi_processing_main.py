@@ -1,3 +1,9 @@
+"""
+Multi-processing main function for face detection using ResNet model.
+This module initializes the video stream, sets up the detection process, and handles the display of results.
+It uses the `multiprocessing` library to create separate processes for video capture and face detection.
+It allows for real-time face detection and display of results in a separate window.
+"""
 import time
 import cv2
 from multiprocessing import Process, Queue

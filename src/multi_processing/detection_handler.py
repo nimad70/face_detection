@@ -1,3 +1,7 @@
+"""
+This module handles the detection of faces in images using a ResNet SSD detector.
+It utilizes multiprocessing to improve performance by processing frames in parallel.
+"""
 from multiprocessing import process, Queue
 from src.object_detection.resNet_face_detector import load_detector, detect_faces, draw_rectangle
 from src.utils.config import resNetSSD_config

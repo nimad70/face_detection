@@ -1,3 +1,7 @@
+"""
+This module provides a class to handle video streaming from a camera or video file using OpenCV.
+It uses threading to continuously read frames from the video source in the background, allowing for real-time processing of video frames.
+"""
 import cv2
 from threading import Thread
 

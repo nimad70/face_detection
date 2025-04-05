@@ -1,6 +1,5 @@
 """
 Real-time Webcam Face Detection and Dataset Collection
-
 This script captures live video from the user's webcam, detects faces using OpenCV's Haar Cascade classifier, 
 processes frames in a multithreaded pipeline, and saves detected faces into separate datasets labeled as "smile" or "nosmile" based on user input. 
 Labels are recorded in a CSV file for future use in image processing tasks.
