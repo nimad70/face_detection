@@ -14,6 +14,7 @@ from src.object_detection.customized_face_detection import customized_face_detec
 from src.multi_processing.multi_processing_main import multi_processing_main
 from src.multi_processing.face_detection_resNet_threaded_main import thread_main
 from src.multi_processing.face_detection_multi_threading import start_threads
+from src.multi_processing.threaded_data_pipeline_resNet import data_pipeline_thread
 from src.data_pipeline.dataset_creation import split_dataset, LABELS
 from src.data_pipeline.data_augmentation import save_augmented_images
 from src.model_training.model_training import train_model, fine_tune_model
@@ -30,11 +31,9 @@ if __name__ == "__main__":
             Captures images, splits them into training, validation, and testing datasets.
             Ensures that a minimum of 6 images per category are taken before proceeding.
             """
-            thread_main()
-
             is_splited = True
             while is_splited:
-                start_threads()
+                data_pipeline_thread()
                 res = split_dataset(LABELS) # Split the dataset
                 if res:
                     print("Smile and Non-smile datasets are created.")
