@@ -12,7 +12,7 @@ from src.object_detection.resNet_face_detector import run_face_detection
 from src.object_detection.mobileNet_object_detector import run_object_detection
 from src.object_detection.customized_face_detection import customized_face_detection
 from src.multi_processing.multi_processing_main import multi_processing_main
-from src.multi_processing.threaded_main import thread_main
+from src.multi_processing.face_detection_resNet_threaded_main import thread_main
 from src.multi_processing.face_detection_multi_threading import start_threads
 from src.dataset.dataset_creation import split_dataset, LABELS
 from src.dataset.data_augmentation import save_augmented_images
