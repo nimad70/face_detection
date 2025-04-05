@@ -127,3 +127,5 @@ def save_augmented_images():
             filename = f"face_{int(time.time())}.jpg"
             aug_path = TRAIN_DATA_PATH / label / filename
             cv2.imwrite(str(aug_path), augmented_image)
+
+    return True
