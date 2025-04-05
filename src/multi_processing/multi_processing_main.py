@@ -2,7 +2,7 @@ import time
 import cv2
 from multiprocessing import Process, Queue
 from src.multi_processing.video_stearm import VideoStream
-from src.multi_processing.detection_worker import detection_worker
+from src.multi_processing.detection_handler import detection_worker
 from src.object_detection.resNet_face_detector import draw_rectangle
 
 
