@@ -79,6 +79,70 @@ def resize_rescale_images(image):
     return result
 
 
+def color_jitter(image, brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1):
+    """
+    Applies color jittering to the input image.
+    Randomly changes brightness, contrast, saturation, and hue.
+    
+    parameters:
+        image (Tensor): Input image tensor.
+        brightness (float): Brightness adjustment factor.
+        contrast (float): Contrast adjustment factor.
+        saturation (float): Saturation adjustment factor.
+        hue (float): Hue adjustment factor.
+    
+    returns:
+        Tensor: Jittered image tensor.
+    """
+    image = tf.image.random_brightness(image, max_delta=brightness)
+    image = tf.image.random_contrast(image, lower=1-contrast, upper=1+contrast)
+    image = tf.image.random_saturation(image, lower=1-saturation, upper=1+saturation)
+    image = tf.image.random_hue(image, max_delta=hue)
+    return tf.clip_by_value(image, 0.0, 255.0)
+
+
+def random_grayscale(image, probability=0.1):
+    """
+    Randomly converts an RGB image to grayscale with a given probability.
+
+    The grayscale image is converted back to 3 channels to maintain shape consistency.
+    Useful for simulating colorless environments or lighting conditions.
+
+    Parameters
+        image (tf.Tensor): A 3D tensor representing an RGB image of shape (height, width, 3).
+        prob (float, optional): Probability of converting the image to grayscale (default is 0.1).
+
+    Returns
+        tf.Tensor: The original image or a grayscale version, maintaining the same shape.
+    """
+    if tf.random.uniform([]) < probability:
+        image = tf.image.rgb_to_grayscale(image)
+        image = tf.image.grayscale_to_rgb(image) # convert back to 3 channels
+
+    return image
+
+
+def add_gaussian_noise(image, mean=0.0, stddev=1.0, probability=0.3):
+    """
+    Adds Gaussian noise to an image with a given probability.
+
+    This augmentation simulates sensor noise and improves robustness to low-quality inputs.
+
+    Parameters
+        image (tf.Tensor): A 3D tensor representing an image of shape (height, width, channels).
+        mean (float, optional): Mean of the Gaussian noise distribution (default is 0.0).
+        stddev (float, optional): Standard deviation of the Gaussian noise (default is 10.0).
+        prob (float, optional): Probability of applying Gaussian noise (default is 0.3).
+
+    Returns
+        tf.Tensor: The image with noise added if applied, clipped to [0.0, 255.0].
+    """
+    if tf.random.uniform([]) < probability:
+        noise = tf.random.normal(shape=tf.shape(image), mean=mean, stddev=stddev)
+        image = tf.cast(image, tf.float32) + noise
+    return tf.clip_by_value(image, 0.0, 255.0)
+
+
 def augment_image(image):
     """
     Applies data augmentation to an input image, including random flipping, rotation, zoom, and contrast adjustment.
@@ -95,7 +159,8 @@ def augment_image(image):
         layers.RandomFlip("horizontal_and_vertical"),
         layers.RandomRotation(0.1),
         layers.RandomZoom(0.1),
-        layers.RandomContrast(0.1)
+        layers.RandomContrast(0.1),
+        layers.RandomTranslation(0.1, 0.1),
 
     ])
 
@@ -104,11 +169,14 @@ def augment_image(image):
     resized = tf.expand_dims(resized, axis=0)
     resized = tf.image.resize(resized, [IMG_SIZE, IMG_SIZE])
 
-    augmented = data_augmentation(resized)
-    augmented = np.squeeze(augmented.numpy().astype("uint8"))
+    augmented = data_augmentation(resized)[0]
+    augmented = color_jitter(augmented)
+    augmented = random_grayscale(augmented)
+    augmented = add_gaussian_noise(augmented)
 
-    # augmented = image_augmentation(resized)
-    return augmented
+    # augmented = np.squeeze(augmented.numpy().astype("uint8"))
+    
+    return augmented.numpy().astype("uint8")
 
 
 def save_augmented_images():
@@ -133,11 +201,13 @@ def save_augmented_images():
         selected_images = random.sample(all_images, augment_size)
 
         try:
+            count_augmented = 0
             train_path = TRAIN_DATA_PATH / label
+
             if not train_path.exists():
                 print(f"[WARNING] Directory {train_path} does not exist. Skipping.")
                 continue
-
+            
             for image_path in selected_images:
                 # print(f"[INFO] Processing: {image_path.name}")
                 image = cv2.imread(str(image_path))
@@ -145,16 +215,20 @@ def save_augmented_images():
                     print("[WARNING] Failed to load image. Skipping.")
                     continue
                 
-                # Apply augmentation and convert back to the original shape
-                augmented = augment_image(image)
+                # Apply 5 augmentations per image
+                for i in range(5):
+                    augmented = augment_image(image)
 
                 # Save augmented image
                 filename = f"face_{int(time.time()*1000)}.jpg"
                 aug_path = train_path / filename
                 cv2.imwrite(str(aug_path), augmented)
-                is_augmented = True
-                print("\n [INFO] Data augmentation process complete.")
-                print("[INFO] Augmented images are saved to the corresponding training datasets!")
+                count_augmented += 1
+    
+            is_augmented = True
+            print("\n[INFO] Data augmentation process complete.")
+            print(f"[INFO] {count_augmented} images augmented and saved to {train_path}.")
+        
         except Exception as e:
             print(f"[ERROR] Augmentation failed: {e}")
     
