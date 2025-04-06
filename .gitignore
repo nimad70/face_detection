@@ -187,12 +187,10 @@ docker-logs/
 docker-compose.override.yml
 container_data/
 
-# Directories
+# Image files and labels
 dataset/
 data/
-
-# Image files and labels
-dataset/labels.csv
+dataset/*.csv
 
 # Ignore editor swap files
 *.swp
