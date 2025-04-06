@@ -48,7 +48,7 @@ def split_dataset(labels):
 
         # Get the total number of images
         len_all_images = len(image_files)
-        print(f"Total {label} images: {len_all_images}")
+        print(f"[INFO] Total {label} images: {len_all_images}")
 
         # Calculate the number of training/validation images
         train_count = int(len(image_files) * train_ratio) 
@@ -68,6 +68,6 @@ def split_dataset(labels):
                 shutil.copy(str(image), str(destination_path))
         else:
             is_small_to_split = False
-            print(f"The total number of '{label}' images are too small to split, \n")
+            print(f"[INFO] The total number of '{label}' images are too small to split, \n")
     
     return is_small_to_split
