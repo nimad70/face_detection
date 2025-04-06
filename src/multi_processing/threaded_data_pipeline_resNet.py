@@ -68,9 +68,13 @@ def save_face_cross(frame, faces, label, label_writer):
         cv2.imwrite(str(file_path), face)  # Save the face image
         label_writer.writerow([filename, label])  # Write the label in a CSV file
 
+
 def data_pipeline_thread():
     """
     Main function to run the threaded face detection using ResNet model.
+
+    returns:
+        bool: True if the process was successful, False otherwise.
     """
     global current_frame
 
@@ -87,12 +91,12 @@ def data_pipeline_thread():
     detection_thread = DetectionThread(detector, get_frame, set_result)
     detection_thread.start()
     
-    display_menu()
 
     try:
         with open(DATASET_PATH / "labels.csv", mode="a", newline="") as csvfile:
             label_writer = csv.writer(csvfile) # Create a CSV writer object
-
+            
+            display_menu()
             while True:
                 ret, frame = vs.read()
                 if not ret:
@@ -110,12 +114,17 @@ def data_pipeline_thread():
                     save_face_cross(frame, detected_faces, "nosmile", label_writer)
                 elif key == ord('q'):
                     break
+    except Exception as e:
+        print(f"[ERROR] An error occurred: {e}")
+        return False
 
     finally:
         # Cleanup
         detection_thread.stop()
         vs.stop()
         cv2.destroyAllWindows()
+    
+    return True
 
 
 if __name__ == "__main__":
