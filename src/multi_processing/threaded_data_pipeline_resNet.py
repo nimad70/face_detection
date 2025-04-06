@@ -46,11 +46,27 @@ def display_menu():
     """
     Displays user interaction options.
     """
-    print("\nThese are options you can choose from: \n\n"
-    "1. Press 'q' to quit\n"
-    "2. Press 's' to save the detected faces\n"
-    "3. Press 'a' to save the detected faces without smile\n")
+    print("\nOptions: \n\n"
+    "  => Press 's' = Save smiling face\n"
+    "  => Press 'a' = save none-smiling face\n"
+    "  => Press 'q' = Quit\n")
 
+
+def save_face_cross(frame, faces, label, label_writer):
+    """
+    Save the detected face with the specified label.
+    """
+    target_path = SMILE_PATH if label == 'smile' else NO_SMILE_PATH
+    for (startX, startY, endX, endY) in faces:
+        # Safe bounding box cropping
+        face = frame[max(0, startY):endY, max(0, startX):endX]
+        if face.size == 0:
+            continue  # Skip if the face is empty
+        
+        filename = f"face_{int(time.time()*1000)}.jpg"
+        file_path = target_path / filename
+        cv2.imwrite(str(file_path), face)  # Save the face image
+        label_writer.writerow([filename, label])  # Write the label in a CSV file
 
 def data_pipeline_thread():
     """
@@ -74,40 +90,26 @@ def data_pipeline_thread():
     display_menu()
 
     try:
-        while True:
-            ret, frame = vs.read()
-            if not ret:
-                break
+        with open(DATASET_PATH / "labels.csv", mode="a", newline="") as csvfile:
+            label_writer = csv.writer(csvfile) # Create a CSV writer object
 
-            current_frame = frame.copy()
-
-            # Draw bounding boxes around detected faces
-            draw_rectangle(frame, detected_faces)
-
-            cv2.imshow("Threaded Face Detection", current_frame)
-
-            with open(DATASET_PATH / "labels.csv", mode="a", newline="") as csvfile:
-                label_writer = csv.writer(csvfile) # Create a CSV writer object
-                selected_key = cv2.waitKey(1) & 0xFF # Wait for the user to press a key
-                
-                # To save the detected faces inside smile/nosmile directories
-                if selected_key == ord('s') or selected_key == ord('a'):
-                    for (startX, startY, endX, endY) in detected_faces:
-                        face = frame[startY+1:endY, startX+1:endX] # Crop the detected face
-                        filename = f"face_{int(time.time())}.jpg" # Create a unique filename
-                        label = "smile" if selected_key == ord('s') else 'nosmile' # Assign the label
-                        # Save the face in the corresponding directory
-                        path = SMILE_PATH / filename if selected_key == ord('s') else NO_SMILE_PATH /filename
-                        cv2.imwrite(str(path), face) # Save the face image
-
-                        # write the label in a CSV file
-                        label_writer.writerow([filename, label])
-
-                # Exit if the user presses 'q'
-                if selected_key == ord('q'):
+            while True:
+                ret, frame = vs.read()
+                if not ret:
                     break
-            # if cv2.waitKey(1) & 0xFF == ord("q"):
-            #     break
+
+                current_frame = frame.copy()
+                draw_rectangle(current_frame, detected_faces)
+                cv2.imshow("Threaded Face Detection", current_frame)
+
+                # To save the detected faces inside smile/nosmile directories
+                key = cv2.waitKey(1) & 0xFF
+                if key == ord('s'):
+                    save_face_cross(frame, detected_faces, "smile", label_writer)
+                elif key == ord('a'):
+                    save_face_cross(frame, detected_faces, "nosmile", label_writer)
+                elif key == ord('q'):
+                    break
 
     finally:
         # Cleanup
