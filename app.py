@@ -63,9 +63,29 @@ if __name__ == "__main__":
             """
             Applies data augmentation techniques to the training dataset to enhance generalization.
             """
-            print("\n[INFO] 1) If you want to augment the dataset, please make sure you already have created the dataset.")
-            print("[INFO] 2) By choosing this option, data augmentation inside model training will be skipped.\n")
-            is_augmented = save_augmented_images()
+            user_consent = input("\nDo you want to skip data augmentation inside model training? (y/n): ").strip().lower()
+            
+            if user_consent == 'y':
+                while True:
+                    is_augmented = save_augmented_images()
+                    if not is_augmented:
+                        print("\n[WARNING] If you want to augment the dataset, please make sure you already have created the dataset.")
+                        break
+                    elif is_augmented:
+                        continue_aug = input("\nDo you want to continue data augmentation? (y/n): ").strip().lower()
+                        if continue_aug == 'y':
+                            print("\n[INFO] Data augmentation is performed one more time.")
+                        elif continue_aug == 'n':
+                            break
+                        else:
+                            print("[WARNING] Invalid input. Please enter 'y' or 'n'.")
+                            continue
+            elif user_consent == 'n':
+                print("\n[INFO] Data augmentation is skipped.")
+                print("[INFO] It is included in model training.")
+            
+            else:
+                print("[WARNING] Invalid input. Defaulting to skipping data augmentation.")
 
         elif choice == "3":
             """
