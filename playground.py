@@ -15,7 +15,7 @@ from src.multi_processing.multi_processing_main import multi_processing_main
 from src.multi_processing.face_detection_resNet_threaded_main import thread_main
 from src.multi_processing.face_detection_multi_threading import start_threads
 from data_pipeline.tarining_data_pipeline import split_dataset, LABELS
-from src.data_pipeline.data_augmentation import save_augmented_images
+from data_pipeline.augment_data_pipeline import save_augmented_images
 from src.model_training.model_training import train_model, fine_tune_model
 from src.model_training.model_evaluation import display_accuracy_metrics, plot_confusuion_matrix
 
