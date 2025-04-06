@@ -4,7 +4,6 @@ Dataset Splitting Script
 This script automates the splitting of image data into training, validation, and testing datasets. 
 It is specifically designed for a binary classification task to organize data into structured directories for easy access during image processing model training.
 """
-
 from pathlib import Path
 import shutil
 import random
@@ -29,7 +28,7 @@ def split_dataset(labels):
     """
     Splits images into training, validation, and test sets based on predefined ratios.
 
-    Args:
+    Parameters:
         labels (list): List of labels or categories to split (e.g., ['smile', 'nosmile']).
 
     Returns:
