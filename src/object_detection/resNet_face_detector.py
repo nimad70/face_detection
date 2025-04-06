@@ -103,8 +103,10 @@ def detect_faces(frame, net, confidence_threshold=0.5, img_size=(300, 300)):
 
 def run_face_detection():
     """
-    Run the face detection script.
-    This function initializes the face detection model, captures video from the webcam,
+    Run the face detection on webcam stream using ResNet.
+    This function captures video from the webcam, processes each frame to detect faces,
+    and draws bounding boxes around detected faces.
+    It also provides functionality to enable or disable GPU acceleration for the model.
     """
     gpu_enabled, prototxt, caffemodel, confidence_threshold, img_size = resNetSSD_config()
     net = load_detector(prototxt, caffemodel, gpu_enabled)
