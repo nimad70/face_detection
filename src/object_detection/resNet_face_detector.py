@@ -26,24 +26,24 @@ def load_detector(prototxt, caffemodel, gpu_enabled):
         net: Loaded ResNet model.
     """
     if not prototxt.exists() or not caffemodel.exists():
-        raise FileNotFoundError("MobileNetSSD model files are missing in the 'model/MobileNetSSD/' directory.")
+        raise FileNotFoundError("[ERROR] resNet model files are missing!")
 
     net = cv2.dnn.readNetFromCaffe(str(prototxt), str(caffemodel))
 
     if gpu_enabled:
         try:
             if cv2.cuda.getCudaEnabledDeviceCount() == 0:
-                raise RuntimeError("GPU is enabled, but no compatible GPU found")
+                raise RuntimeError("\n[INFO] GPU is enabled, but no compatible GPU found!")
             net.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
             net.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
-            print("GPU is enabled, using CUDA backend")
+            print("[INFO] GPU is enabled, using CUDA backend.")
         except Exception as e:
-            print(f"Error enabling GPU: {e}")
-            print("Falling back to CPU")
+            print(f"\n[ERROR] Error with GPU: {e}")
+            print("[INFO] Falling back to CPU.")
             net.setPreferableBackend(cv2.dnn.DNN_BACKEND_OPENCV)
             net.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
     else:
-        print("GPU is disabled in config, using CPU")
+        print("\n[INFO] GPU is disabled in config, using CPU.")
         net.setPreferableBackend(cv2.dnn.DNN_BACKEND_OPENCV)
         net.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
         
@@ -115,7 +115,7 @@ def run_face_detection():
     while True:
         res, frame = cap.read()
         if not res:
-            print("Failed to get frame")
+            print("[ERROR] Failed to get frame")
             break
     
         faces = detect_faces(frame, net, confidence_threshold, img_size)
