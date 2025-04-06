@@ -190,7 +190,7 @@ container_data/
 # Image files and labels
 dataset/
 data/
-dataset/*.csv
+*.csv
 
 # Ignore editor swap files
 *.swp
