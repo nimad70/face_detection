@@ -4,13 +4,20 @@ Real-Time Face Detection and Smile Classification
 This script captures video frames, detects faces, and classifies them as 'Smiling' or 'Not Smiling' 
 using a pre-trained deep learning model (MobileNetV2).
 """
+
 import cv2
-import tensorflow as tf
 import numpy as np
-from src.object_detection.haar_cascade_face_detector import video_capture, haarcascade_classifier, preprocessing_frame, face_detector, scale_bounding_box
+import tensorflow as tf
+
 from src.model_training.model_evaluation import load_model
-# from face_detection import video_capture, haarcascade_classifier, preprocessing_frame, face_detector, scale_bounding_box
-# from model_evaluation import load_model
+from src.object_detection.haar_cascade_face_detector import (
+    video_capture, 
+    haarcascade_classifier, 
+    preprocessing_frame, 
+    face_detector, 
+    scale_bounding_box,
+)
+
 
 # Hyperparameters
 IMG_SIZE = 224

@@ -4,11 +4,21 @@ Model Evaluation Script
 This script evaluates a trained and fine-tuned models by loading test data,
 making predictions, computing evaluation metrics, and displaying the confusion matrix.
 """
-import numpy as np
-import matplotlib.pyplot as plt
-import tensorflow as tf
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix, ConfusionMatrixDisplay
+
 from pathlib import Path
+
+import matplotlib.pyplot as plt
+import numpy as np
+import tensorflow as tf
+from sklearn.metrics import (
+    ConfusionMatrixDisplay,
+    accuracy_score, 
+    confusion_matrix, 
+    f1_score, 
+    precision_score, 
+    recall_score, 
+)
+
 
 # Constants
 DATA_PATH = Path("data")

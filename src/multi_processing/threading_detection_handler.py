@@ -3,8 +3,9 @@ This module contains a class that runs a face detection algorithm in a separate 
 It retrieves frames from a video stream and processes them using the detector. The results are set using a provided function.
 It is designed to be used in a multi-threaded environment for real-time face detection.
 """
-import threading
+
 import time
+import threading
 
 
 class DetectionThread(threading.Thread):

@@ -3,13 +3,20 @@ Threaded face detection using ResNet model.
 This script captures video frames from a webcam, detects faces using a ResNet model, and displays the results in real-time.
 It uses threading to handle the detection process separately from the video capture, allowing for smoother performance.
 """
-import time
+
 import csv
+import time
 from pathlib import Path
+
 import cv2
-from src.multi_processing.video_stearm import VideoStream
+
 from src.multi_processing.threading_detection_handler import DetectionThread
-from src.object_detection.resNet_face_detector import load_detector, detect_faces, draw_rectangle
+from src.multi_processing.video_stearm import VideoStream
+from src.object_detection.resNet_face_detector import (
+    load_detector, 
+    detect_faces, 
+    draw_rectangle,
+)
 from src.utils.config import resNetSSD_config
 
 

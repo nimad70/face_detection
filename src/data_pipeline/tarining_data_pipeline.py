@@ -4,9 +4,10 @@ Dataset Splitting Script
 This script automates the splitting of image data into training, validation, and testing datasets. 
 It is specifically designed for a binary classification task to organize data into structured directories for easy access during image processing model training.
 """
-from pathlib import Path
-import shutil
+
 import random
+import shutil
+from pathlib import Path
 
 
 # Path Constants

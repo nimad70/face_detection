@@ -4,13 +4,15 @@ This script captures live video from the user's webcam, detects faces using Open
 processes frames in a multithreaded pipeline, and saves detected faces into separate datasets labeled as "smile" or "nosmile" based on user input. 
 Labels are recorded in a CSV file for future use in image processing tasks.
 """
-import cv2
-import sys
-import queue
-import threading
-from pathlib import Path
+
 import csv
+import queue
+import sys
+import threading
 import time
+from pathlib import Path
+
+import cv2
 
 
 # Define the path to save the dataset

@@ -5,14 +5,14 @@ This script integrates functionalities from various modules to capture webcam vi
 create labeled datasets, apply data augmentation, train and fine-tune a model, evaluate model performance, 
 and perform real-time face detection and smile classification.
 """
-# local imports
-from src.utils.menu import show_menu
-from src.object_detection.customized_face_detection import customized_face_detection
-from src.multi_processing.threaded_data_pipeline_resNet import data_pipeline_thread
-from src.data_pipeline.tarining_data_pipeline import split_dataset, LABELS
+
 from src.data_pipeline.augment_data_pipeline import save_augmented_images
-from src.model_training.model_training import train_model, fine_tune_model
+from src.data_pipeline.tarining_data_pipeline import split_dataset, LABELS
 from src.model_training.model_evaluation import display_accuracy_metrics, plot_confusuion_matrix
+from src.model_training.model_training import train_model, fine_tune_model
+from src.multi_processing.threaded_data_pipeline_resNet import data_pipeline_thread
+from src.object_detection.customized_face_detection import customized_face_detection
+from src.utils.menu import show_menu
 
 
 if __name__ == "__main__":

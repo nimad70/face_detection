@@ -3,6 +3,8 @@ This module provides a menu interface for the user to interact with the face rec
 It allows the user to select various functionalities such as capturing a face, dataset creation,
 data augmentation, model training, fine-tuning, evaluation, and real-time face detection.
 """
+
+
 def show_menu():
     """
     Displays the main menu options for the user.

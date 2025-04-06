@@ -1,5 +1,9 @@
-import cv2
+"""
+Utility functions for the project.
+"""
+
 import time
+import cv2
 
 
 _prev_time = None

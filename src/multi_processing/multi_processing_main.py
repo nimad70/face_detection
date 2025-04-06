@@ -4,13 +4,15 @@ This module initializes the video stream, sets up the detection process, and han
 It uses the `multiprocessing` library to create separate processes for video capture and face detection.
 It allows for real-time face detection and display of results in a separate window.
 """
-import time
-import cv2
-from multiprocessing import Process, Queue
-from src.multi_processing.video_stearm import VideoStream
-from src.multi_processing.detection_handler import detection_worker
-from src.object_detection.resNet_face_detector import draw_rectangle
 
+import time
+from multiprocessing import Process, Queue
+
+import cv2
+
+from src.multi_processing.detection_handler import detection_worker
+from src.multi_processing.video_stearm import VideoStream
+from src.object_detection.resNet_face_detector import draw_rectangle
 
 
 def multi_processing_main():

@@ -5,17 +5,19 @@ This script performs resizing, rescaling, and data augmentation on image dataset
 Augmented images are saved to enrich the training dataset, enhancing model performance and robustness.
 """
 
-import random
 import time
+import random
 from pathlib import Path
-import numpy as np
+
 import cv2
+import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
 from tensorflow.keras.models import Sequential
-from src.utils.config import resNetSSD_config
+
 from src.object_detection.resNet_face_detector import load_detector, detect_faces
+from src.utils.config import resNetSSD_config
 
 
 # Path contants

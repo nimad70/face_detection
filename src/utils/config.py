@@ -1,5 +1,11 @@
-import numpy as np
+"""
+Configuration for the MobileNet SSD and ResNet face detection models.
+This module provides functions to set up the model parameters, including the model directory.
+"""
+
 from pathlib import Path
+
+import numpy as np
 
 
 DIR_ = Path("model")

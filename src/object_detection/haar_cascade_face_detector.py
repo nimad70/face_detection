@@ -5,9 +5,11 @@ This module provides utility functions for webcam initialization, face detection
 frame preprocessing, bounding box scaling, and visualization of detected faces.
 """
 
-import cv2
 import sys
 import time
+
+import cv2
+
 from src.utils.utils import update_fps
 
 
