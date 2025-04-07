@@ -51,8 +51,8 @@ def get_user_input(is_application=False):
     return use_split, is_augmented
 
 
-# True = use train/val/test folders; False = use raw smile/nosmile
-USE_PRE_SPLIT, AUGMENTED = get_user_input() 
+## Uncomment when run this module directly. True = use train/val/test folders; False = use raw smile/nosmile
+# USE_PRE_SPLIT, AUGMENTED = get_user_input() 
 
 # --- Constants ---
 IMG_SIZE = 224
@@ -560,16 +560,17 @@ if __name__ == "__main__":
     """
     Main function to execute the model training and fine-tuning process.
     """
-    if USE_PRE_SPLIT:
-        history = train_model(augmented=AUGMENTED)
-        save_history_plot(history, "presplit")
-        fine_tune_model()
-        model = tf.keras.models.load_model(MODEL_PATH / "smile_detection_fine_tuned_model.h5")
-    else:
-        train_with_kfold(augmented=AUGMENTED)
-        model = tf.keras.models.load_model(MODEL_PATH / "smile_model_fold1_acc_" + max([f.name for f in MODEL_PATH.glob("smile_model_fold*_acc_*.h5")], key=lambda f: float(f.stem.split("_acc_")[-1])).split("/")[-1])
+    pass
+    # if USE_PRE_SPLIT:
+    #     history = train_model(augmented=AUGMENTED)
+    #     save_history_plot(history, "presplit")
+    #     fine_tune_model()
+    #     model = tf.keras.models.load_model(MODEL_PATH / "smile_detection_fine_tuned_model.h5")
+    # else:
+    #     train_with_kfold(augmented=AUGMENTED)
+    #     model = tf.keras.models.load_model(MODEL_PATH / "smile_model_fold1_acc_" + max([f.name for f in MODEL_PATH.glob("smile_model_fold*_acc_*.h5")], key=lambda f: float(f.stem.split("_acc_")[-1])).split("/")[-1])
 
-    evaluate_and_visualize_misclassifications(model)
+    # evaluate_and_visualize_misclassifications(model)
 
-    # Export to TFLite
-    export_model_to_tflite()
+    # # Export to TFLite
+    # export_model_to_tflite()
