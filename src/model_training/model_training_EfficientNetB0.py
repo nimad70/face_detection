@@ -26,12 +26,24 @@ from tensorflow.keras.applications.efficientnet_v2 import preprocess_input
 
 
 # --- Configuration via input ---
-def get_user_input():
+def get_user_input(is_application=False):
+    """
+    Get user input for whether to use pre-split dataset and if data augmentation has been applied.
+    
+    Parameters:
+        is_application (bool): Flag to indicate if the script is run as an application.
+    Returns:
+        tuple: A tuple containing two boolean values indicating whether to use pre-split dataset and if data augmentation has been applied.
+    """
     use_split = use_split = input("Use pre-split dataset with train/val/test directories? (y/n): ").strip().lower() == 'y'
-    is_augmented = input("Has data augmentation already been applied to training data? (y/n): ").strip().lower() == 'y'
+    if not is_application:
+        is_augmented = input("Has data augmentation already been applied to training data? (y/n): ").strip().lower() == 'y'
+
     return use_split, is_augmented
 
-USE_PRE_SPLIT, AUGMENTED = get_user_input() # True = use train/val/test folders; False = use raw smile/nosmile
+
+# True = use train/val/test folders; False = use raw smile/nosmile
+USE_PRE_SPLIT, AUGMENTED = get_user_input() 
 
 # --- Constants ---
 IMG_SIZE = 224
@@ -61,6 +73,15 @@ MODEL_PATH.mkdir(parents=True, exist_ok=True)
 
 # --- Utility Functions ---
 def load_and_preprocess(path):
+    """
+    Loads and preprocesses an image from the given path.
+    
+    Parameters:
+        path (str): Path to the image file.
+    
+    Returns:
+        tf.Tensor: Preprocessed image tensor.
+    """
     image = tf.io.read_file(path)
     image = tf.image.decode_jpeg(image, channels=3)
     image = tf.image.resize(image, [IMG_SIZE, IMG_SIZE])
@@ -72,7 +93,7 @@ def prepare(ds, shuffle=False, augment=False):
     """
     Preprocesses the dataset by resizing, shuffling, and applying augmentations.
 
-    Args:
+    Parameters:
         ds (tf.data.Dataset): Input dataset.
         shuffle (bool, optional): Whether to shuffle the dataset. Defaults to False.
         augment (bool, optional): Whether to apply data augmentation. Defaults to False.
@@ -194,7 +215,7 @@ def load_base_model(is_fine_tuned=False):
     """
     Load the pre-trained MobileNetV2 model.
 
-    Args:
+    Parameters:
         is_fine_tuned (bool, optional): Whether to enable fine-tuning. Defaults to False.
     
     Returns:
@@ -215,7 +236,7 @@ def build_model(is_fine_tuned):
     """
     Builds the model using the base MobileNetV2 architecture.
 
-    Args:
+    Parameters:
         is_fine_tuned (bool, optional): Whether to fine-tune the model. Defaults to False.
 
     Returns:
@@ -236,6 +257,15 @@ def build_model(is_fine_tuned):
 
 # --- Hyperparameter Tuning Support ---
 def build_model_with_hyperparam_tuning(lr=0.0001, dense=256, dropout=0.5, freeze=True):
+    """
+    Builds the model with hyperparameter tuning.
+    
+    Parameters:
+        lr (float): Learning rate.
+    
+    Returns:
+        model (tf.keras.Model): The compiled model.
+    """
     base_model = keras.applications.EfficientNetV2B0(
         input_shape=(224, 224, 3),
         include_top=False,
@@ -257,6 +287,12 @@ def build_model_with_hyperparam_tuning(lr=0.0001, dense=256, dropout=0.5, freeze
 
 # --- Plot and Save Training History ---
 def save_history_plot(history, tag):
+    """
+    Save the training history plot to the specified path.
+
+    Parameters:
+        history (tf.keras.callbacks.History): Training history.
+    """
     plt.figure(figsize=(12, 5))
     plt.subplot(1, 2, 1)
     plt.plot(history.history['accuracy'], label='train_acc')
@@ -277,8 +313,13 @@ def save_history_plot(history, tag):
 
 
 # --- K-Fold Training (if raw dataset used) ---
-# --- K-Fold Training ---
 def train_with_kfold(augmented):
+    """
+    Train the model using K-Fold cross-validation.
+
+    Parameters:
+        augmented (bool): Whether to apply data augmentation.
+    """
     all_image_paths, all_labels = [], []
     for label in LABELS:
         image_paths = list((DATASET_PATH / label).glob("*.jpg"))
@@ -348,15 +389,29 @@ def train_with_kfold(augmented):
     print("Saved fold results to results_kfold.csv")
 
 
-
 # --- Pre-Split Training ---
 def fine_tune_layer_input():
+    """
+    Get user input for the number of layers to fine-tune.
+
+    Returns:
+        int: Number of layers to fine-tune.
+    """
     base_model_ = load_base_model()
     fine_tune_at = int(input("Enter the number of layers to fine-tune (from the end): "))
     return fine_tune_at
 
 
 def train_model(augmented=False):
+    """
+    Train the model using the pre-split dataset.
+    
+    Parameters:
+        augmented (bool): Whether to apply data augmentation.
+
+    Returns:
+        history (tf.keras.callbacks.History): Training history.
+    """
     train_ds, val_ds, test_ds = preprocessed_data(apply_augmentation=not augmented)
     best_model, best_score, best_params = None, 0, None
     param_grid = {
@@ -388,7 +443,7 @@ def train_model(augmented=False):
         f.write(f"\nBest validation accuracy: {best_score:.4f}")
 
     return best_history
-  
+
 
 def fine_tune_model():
     """
@@ -429,6 +484,9 @@ def fine_tune_model():
 
 
 if __name__ == "__main__":
+    """
+    Main function to execute the model training and fine-tuning process.
+    """
     if USE_PRE_SPLIT:
         history = train_model(augmented=AUGMENTED)
         save_history_plot(history, "presplit")
