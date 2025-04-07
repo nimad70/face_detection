@@ -188,6 +188,7 @@ docker-compose.override.yml
 container_data/
 
 # Image files and labels
+notebook/
 dataset/
 data/
 dataset/labels.csv
