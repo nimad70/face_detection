@@ -12,12 +12,21 @@ import random
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from sklearn.model_selection import StratifiedKFold
-from sklearn.model_selection import train_test_split
-from sklearn.model_selection import ParameterSampler
-from sklearn.metrics import classification_report
-from sklearn.metrics import accuracy_score
-from tqdm import tqdm 
+from sklearn.model_selection import (
+    StratifiedKFold,
+    train_test_split,
+    ParameterSampler,
+    )
+from sklearn.metrics import (
+    classification_report, 
+    accuracy_score, 
+    confusion_matrix, 
+    f1_score, 
+    precision_score, 
+    recall_score, 
+    ConfusionMatrixDisplay,
+)
+from tqdm import tqdm
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
@@ -255,7 +264,7 @@ def build_model(is_fine_tuned):
     return model
 
 
-# --- Hyperparameter Tuning Support ---
+# --- Hyperparameter Tuning ---
 def build_model_with_hyperparam_tuning(lr=0.0001, dense=256, dropout=0.5, freeze=True):
     """
     Builds the model with hyperparameter tuning.
@@ -271,8 +280,8 @@ def build_model_with_hyperparam_tuning(lr=0.0001, dense=256, dropout=0.5, freeze
         include_top=False,
         weights="imagenet"
     )
-    base_model.trainable = not freeze
 
+    base_model.trainable = not freeze
     model = keras.Sequential([
         base_model,
         layers.GlobalAveragePooling2D(),
@@ -285,7 +294,7 @@ def build_model_with_hyperparam_tuning(lr=0.0001, dense=256, dropout=0.5, freeze
     return model
 
 
-# --- Plot and Save Training History ---
+# --- Plot and Training History ---
 def save_history_plot(history, tag):
     """
     Save the training history plot to the specified path.
@@ -483,6 +492,49 @@ def fine_tune_model():
         return history_fine_tune
 
 
+# --- Evaluation ---
+def evaluate_and_visualize_misclassifications(model):
+    test_ds = tf.keras.utils.image_dataset_from_directory(TEST_DATA_PATH, image_size=(IMG_SIZE, IMG_SIZE), batch_size=BATCH_SIZE, shuffle=False)
+    test_ds = prepare(test_ds)
+
+    y_true = np.concatenate([y.numpy() for _, y in test_ds])
+    y_pred_probs = model.predict(test_ds).flatten()
+    y_pred = (y_pred_probs > 0.5).astype(int)
+
+    acc = accuracy_score(y_true, y_pred)
+    precision = precision_score(y_true, y_pred)
+    recall = recall_score(y_true, y_pred)
+    f1 = f1_score(y_true, y_pred)
+    cm = confusion_matrix(y_true, y_pred)
+
+    print("\nClassification Report:")
+    report = classification_report(y_true, y_pred, target_names=LABELS)
+    print(report)
+
+    with open(MODEL_PATH / "classification_report.txt", "w") as f:
+        f.write(report)
+        f.write(f"\nAccuracy: {acc:.4f}\nPrecision: {precision:.4f}\nRecall: {recall:.4f}\nF1-score: {f1:.4f}")
+
+    print(f"\nConfusion Matrix:\n{cm}")
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=LABELS)
+    disp.plot(cmap='RdBu')
+    plt.title("Confusion Matrix")
+    plt.tight_layout()
+    plt.savefig(MODEL_PATH / "confusion_matrix.png")
+    plt.show()
+
+    ## Uncomment to identify misclassifications
+    # misclassified_indices = np.where(y_true != y_pred)[0]
+    # print(f"\nTotal Misclassified Samples: {len(misclassified_indices)}")
+
+    # for i in misclassified_indices[:5]:
+    #     image, label = list(test_ds.unbatch().skip(i).take(1))[0]
+    #     plt.imshow(image.numpy().astype("uint8"))
+    #     plt.title(f"True: {LABELS[label]}, Pred: {LABELS[y_pred[i]]}")
+    #     plt.axis("off")
+    #     plt.show()
+
+
 if __name__ == "__main__":
     """
     Main function to execute the model training and fine-tuning process.
@@ -491,5 +543,9 @@ if __name__ == "__main__":
         history = train_model(augmented=AUGMENTED)
         save_history_plot(history, "presplit")
         fine_tune_model()
+        model = tf.keras.models.load_model(MODEL_PATH / "smile_detection_fine_tuned_model.h5")
     else:
         train_with_kfold(augmented=AUGMENTED)
+        model = tf.keras.models.load_model(MODEL_PATH / "smile_model_fold1_acc_" + max([f.name for f in MODEL_PATH.glob("smile_model_fold*_acc_*.h5")], key=lambda f: float(f.stem.split("_acc_")[-1])).split("/")[-1])
+
+    evaluate_and_visualize_misclassifications(model)
