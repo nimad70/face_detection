@@ -22,7 +22,7 @@ from src.model_training.model_training_EfficientNetB0 import (
     MODEL_PATH,
 )
 from src.multi_processing.threaded_data_pipeline_resNet import data_pipeline_thread
-from src.object_detection.customized_face_detection import customized_face_detection
+from src.object_detection.tflite_face_detection import face_expression_detection_tflite
 from src.utils.menu import show_menu
 
 
@@ -124,7 +124,7 @@ if __name__ == "__main__":
             """
             Runs real-time face detection and smile classification using a webcam feed.
             """
-            customized_face_detection()
+            face_expression_detection_tflite()
 
         elif choice == "5":
             """
