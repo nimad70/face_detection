@@ -9,7 +9,7 @@ import cv2
 import numpy as np
 import tensorflow as tf
 
-from src.model_training.model_evaluation import load_model
+from model_training.model_evaluation_MobileNetV2 import load_model
 from src.object_detection.haar_cascade_face_detector import (
     video_capture, 
     haarcascade_classifier, 

@@ -8,7 +8,7 @@ and perform real-time face detection and smile classification.
 
 from src.data_pipeline.augment_data_pipeline import save_augmented_images
 from src.data_pipeline.tarining_data_pipeline import split_dataset, LABELS
-from src.model_training.model_evaluation import display_accuracy_metrics, plot_confusuion_matrix
+from model_training.model_evaluation_MobileNetV2 import display_accuracy_metrics, plot_confusuion_matrix
 from src.model_training.model_training_EfficientNetB0 import (
     fine_tune_model, 
     get_user_input, 
