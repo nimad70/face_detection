@@ -1,0 +1,2 @@
+{'lr': 0.0005, 'freeze': False, 'dropout': 0.3, 'dense': 256}
+Best validation accuracy: 1.0000
