@@ -9,7 +9,7 @@ and perform real-time face detection and smile classification.
 from src.data_pipeline.augment_data_pipeline import save_augmented_images
 from src.data_pipeline.tarining_data_pipeline import split_dataset, LABELS
 from src.model_training.model_evaluation import display_accuracy_metrics, plot_confusuion_matrix
-from src.model_training.model_training import train_model, fine_tune_model
+from src.model_training.model_training_MobileNetV2 import train_model, fine_tune_model
 from src.multi_processing.face_detection_multi_threading import start_threads
 from src.multi_processing.face_detection_resNet_threaded_main import thread_main
 from src.multi_processing.multi_processing_main import multi_processing_main
