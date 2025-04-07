@@ -31,7 +31,7 @@ if __name__ == "__main__":
 
     while True:
         show_menu()
-        choice = input("Enter your choice (1-6): ").strip()
+        choice = input("Enter your choice (1-5): ").strip()
 
         if choice == "1":
             """
@@ -110,13 +110,13 @@ if __name__ == "__main__":
             
             evaluate_and_visualize_misclassifications(model)
         
-        elif choice == "5":
+        elif choice == "4":
             """
             Runs real-time face detection and smile classification using a webcam feed.
             """
             customized_face_detection()
 
-        elif choice == "6":
+        elif choice == "5":
             """
             Exits the application.
             """
@@ -128,7 +128,7 @@ if __name__ == "__main__":
             """
             Handles invalid menu selections.
             """
-            invalid_option_text = "<Invalid choice> --> Please select a valid option between 1 to 6!"
+            invalid_option_text = "<Invalid choice> --> Please select a valid option between 1 to 5!"
             print('-' * len(invalid_option_text))
             print(f"{invalid_option_text}")
             print('-' * len(invalid_option_text))
