@@ -64,7 +64,7 @@ AUTOTUNE = tf.data.AUTOTUNE # To allow tensflow to automatically tune the buffer
 # --- Paths ---
 DATASET_PATH = Path("dataset")
 DATA_PATH = Path("data")
-MODEL_PATH = Path("model")
+MODEL_PATH = Path("model/EfficientNetB0")
 
 # Directories for train/validation/test datasets
 TRAIN_DATA_PATH = DATA_PATH / "train"
