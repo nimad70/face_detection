@@ -535,6 +535,27 @@ def evaluate_and_visualize_misclassifications(model):
     #     plt.show()
 
 
+# --- TFLite Export ---
+def export_model_to_tflite():
+    """
+    Export the trained model to TFLite format.
+    """
+    model_path = MODEL_PATH / "smile_detection_fine_tuned_model.h5"
+    if not model_path.exists():
+        print("Model not found for TFLite conversion.")
+        return
+
+    model = tf.keras.models.load_model(model_path)
+    converter = tf.lite.TFLiteConverter.from_keras_model(model)
+    tflite_model = converter.convert()
+
+    tflite_path = MODEL_PATH / "smile_detection_model.tflite"
+    with open(tflite_path, "wb") as f:
+        f.write(tflite_model)
+
+    print(f"Exported TFLite model to {tflite_path}")
+
+
 if __name__ == "__main__":
     """
     Main function to execute the model training and fine-tuning process.
@@ -549,3 +570,6 @@ if __name__ == "__main__":
         model = tf.keras.models.load_model(MODEL_PATH / "smile_model_fold1_acc_" + max([f.name for f in MODEL_PATH.glob("smile_model_fold*_acc_*.h5")], key=lambda f: float(f.stem.split("_acc_")[-1])).split("/")[-1])
 
     evaluate_and_visualize_misclassifications(model)
+
+    # Export to TFLite
+    export_model_to_tflite()
