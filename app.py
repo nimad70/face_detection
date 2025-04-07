@@ -6,15 +6,19 @@ create labeled datasets, apply data augmentation, train and fine-tune a model, e
 and perform real-time face detection and smile classification.
 """
 
+import tensorflow as tf
+from tensorflow import keras
+
 from src.data_pipeline.augment_data_pipeline import save_augmented_images
 from src.data_pipeline.tarining_data_pipeline import split_dataset, LABELS
-from model_training.model_evaluation_MobileNetV2 import display_accuracy_metrics, plot_confusuion_matrix
 from src.model_training.model_training_EfficientNetB0 import (
     fine_tune_model, 
     get_user_input, 
     save_history_plot,
     train_model, 
     train_with_kfold,
+    evaluate_and_visualize_misclassifications,
+    MODEL_PATH
 )
 from src.multi_processing.threaded_data_pipeline_resNet import data_pipeline_thread
 from src.object_detection.customized_face_detection import customized_face_detection
@@ -92,25 +96,19 @@ if __name__ == "__main__":
             """
             Trains the CNN model using the training dataset. The user is prompted to choose
             whether to use a pre-split dataset or perform k-fold cross-validation.
+            Evaluates the model's performance and displays accuracy metrics.
             """
             use_pre_split = get_user_input(is_application=True)
             if use_pre_split:
                 history = train_model(augmented=is_augmented)
                 save_history_plot(history, "presplit")
                 fine_tune_model()
+                model = tf.keras.models.load_model(MODEL_PATH / "smile_detection_fine_tuned_model.h5")
             else:
                 train_with_kfold(augmented=is_augmented)
-
-            print("Model training is completed!")
-
-        elif choice == "4":
-            """
-            Evaluates the trained or fine-tuned model using accuracy, precision, recall, 
-            F1-score, and confusion matrix.
-            """
-            display_accuracy_metrics(is_fine_tuned=True)
-            plot_confusuion_matrix()
-            print("Model evaluation is completed!")
+                model = tf.keras.models.load_model(MODEL_PATH / "smile_model_fold1_acc_" + max([f.name for f in MODEL_PATH.glob("smile_model_fold*_acc_*.h5")], key=lambda f: float(f.stem.split("_acc_")[-1])).split("/")[-1])
+            
+            evaluate_and_visualize_misclassifications(model)
         
         elif choice == "5":
             """
