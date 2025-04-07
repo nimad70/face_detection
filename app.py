@@ -21,7 +21,7 @@ if __name__ == "__main__":
 
     while True:
         show_menu()
-        choice = input("Enter your choice (1-7): ").strip()
+        choice = input("Enter your choice (1-6): ").strip()
 
         if choice == "1":
             """
@@ -88,15 +88,8 @@ if __name__ == "__main__":
             """
             train_model(is_augmented)
             print("Model training is completed!")
-        
-        elif choice == "4":
-            """
-            Fine-tunes the pre-trained model to improve performance.
-            """
-            fine_tune_model()
-            print("Model fine-tuning is completed!")
 
-        elif choice == "5":
+        elif choice == "4":
             """
             Evaluates the trained or fine-tuned model using accuracy, precision, recall, 
             F1-score, and confusion matrix.
@@ -105,13 +98,13 @@ if __name__ == "__main__":
             plot_confusuion_matrix()
             print("Model evaluation is completed!")
         
-        elif choice == "6":
+        elif choice == "5":
             """
             Runs real-time face detection and smile classification using a webcam feed.
             """
             customized_face_detection()
 
-        elif choice == "7":
+        elif choice == "6":
             """
             Exits the application.
             """
@@ -123,7 +116,7 @@ if __name__ == "__main__":
             """
             Handles invalid menu selections.
             """
-            invalid_option_text = "<Invalid choice> --> Please select a valid option between 1 to 7!"
+            invalid_option_text = "<Invalid choice> --> Please select a valid option between 1 to 6!"
             print('-' * len(invalid_option_text))
             print(f"{invalid_option_text}")
             print('-' * len(invalid_option_text))
