@@ -16,8 +16,15 @@ from tensorflow.keras import layers
 from tensorflow.keras.models import Sequential
 
 
-# --- Configuration Flags ---
-USE_PRE_SPLIT = True # True = use train/val/test folders; False = use raw smile/nosmile
+# --- Configuration via input ---
+def get_user_input():
+    use_split = use_split = input("Use pre-split dataset with train/val/test directories? (y/n): ").strip().lower() == 'y'
+    # is_augmented = input("Has data augmentation already been applied to training data? (y/n): ").strip().lower() == 'y'
+    return use_split
+
+USE_PRE_SPLIT = get_user_input() # True = use train/val/test folders; False = use raw smile/nosmile
+
+# --- Constants ---
 IMG_SIZE = 224
 BATCH_SIZE = 32
 EPOCHS = 10
