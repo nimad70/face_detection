@@ -18,7 +18,8 @@ from src.model_training.model_training_EfficientNetB0 import (
     train_model, 
     train_with_kfold,
     evaluate_and_visualize_misclassifications,
-    MODEL_PATH
+    export_model_to_tflite,
+    MODEL_PATH,
 )
 from src.multi_processing.threaded_data_pipeline_resNet import data_pipeline_thread
 from src.object_detection.customized_face_detection import customized_face_detection
@@ -109,6 +110,15 @@ if __name__ == "__main__":
                 model = tf.keras.models.load_model(MODEL_PATH / "smile_model_fold1_acc_" + max([f.name for f in MODEL_PATH.glob("smile_model_fold*_acc_*.h5")], key=lambda f: float(f.stem.split("_acc_")[-1])).split("/")[-1])
             
             evaluate_and_visualize_misclassifications(model)
+
+            is_exported = input("\nDo you want to export the model to TFLite? (y/n): ").strip().lower()
+            if is_exported == 'y':
+                export_model_to_tflite()
+                print("\n[INFO] Model exported to TFLite successfully.")
+            elif is_exported == 'n':
+                print("\n[INFO] Model export to TFLite skipped.")
+            else:
+                print("[WARNING] Invalid input. Defaulting to skipping model export.")
         
         elif choice == "4":
             """
