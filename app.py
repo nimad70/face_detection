@@ -9,7 +9,13 @@ and perform real-time face detection and smile classification.
 from src.data_pipeline.augment_data_pipeline import save_augmented_images
 from src.data_pipeline.tarining_data_pipeline import split_dataset, LABELS
 from src.model_training.model_evaluation import display_accuracy_metrics, plot_confusuion_matrix
-from src.model_training.model_training_MobileNetV2 import train_model, fine_tune_model
+from src.model_training.model_training_EfficientNetB0 import (
+    fine_tune_model, 
+    get_user_input, 
+    save_history_plot,
+    train_model, 
+    train_with_kfold,
+)
 from src.multi_processing.threaded_data_pipeline_resNet import data_pipeline_thread
 from src.object_detection.customized_face_detection import customized_face_detection
 from src.utils.menu import show_menu
@@ -84,9 +90,17 @@ if __name__ == "__main__":
 
         elif choice == "3":
             """
-            Trains the model using the prepared dataset.
+            Trains the CNN model using the training dataset. The user is prompted to choose
+            whether to use a pre-split dataset or perform k-fold cross-validation.
             """
-            train_model(is_augmented)
+            use_pre_split = get_user_input(is_application=True)
+            if use_pre_split:
+                history = train_model(augmented=is_augmented)
+                save_history_plot(history, "presplit")
+                fine_tune_model()
+            else:
+                train_with_kfold(augmented=is_augmented)
+
             print("Model training is completed!")
 
         elif choice == "4":
