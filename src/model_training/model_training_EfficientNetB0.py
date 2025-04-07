@@ -426,3 +426,12 @@ def fine_tune_model():
         print(f"Model saved at {model_save_path}")
 
         return history_fine_tune
+
+
+if __name__ == "__main__":
+    if USE_PRE_SPLIT:
+        history = train_model(augmented=AUGMENTED)
+        save_history_plot(history, "presplit")
+        fine_tune_model()
+    else:
+        train_with_kfold(augmented=AUGMENTED)
