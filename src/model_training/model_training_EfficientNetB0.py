@@ -198,7 +198,7 @@ def load_data_from_raw():
     )
 
 
-def preprocessed_data(apply_augmentation):
+def preprocessed_data(apply_augmentation, use_pre_split):
     """
     Load the dataset and apply pre-processing.
     
@@ -207,7 +207,7 @@ def preprocessed_data(apply_augmentation):
         val_ds (tf.data.Dataset): Preprocessed validation dataset.
         test_ds (tf.data.Dataset): Preprocessed testing dataset.
     """
-    if USE_PRE_SPLIT:
+    if use_pre_split:
         train_ds, val_ds, test_ds = load_data_from_split()
     else:
         train_ds, val_ds, test_ds = load_data_from_raw()
@@ -411,7 +411,7 @@ def fine_tune_layer_input():
     return fine_tune_at
 
 
-def train_model(augmented=False):
+def train_model(augmented=False, use_pre_split=False):
     """
     Train the model using the pre-split dataset.
     
@@ -421,7 +421,7 @@ def train_model(augmented=False):
     Returns:
         history (tf.keras.callbacks.History): Training history.
     """
-    train_ds, val_ds, test_ds = preprocessed_data(apply_augmentation=not augmented)
+    train_ds, val_ds, test_ds = preprocessed_data(apply_augmentation=not augmented, use_pre_split=use_pre_split)
     best_model, best_score, best_params = None, 0, None
     param_grid = {
         'lr': [0.0001, 0.0005, 0.001],
@@ -454,14 +454,14 @@ def train_model(augmented=False):
     return best_history
 
 
-def fine_tune_model():
+def fine_tune_model(use_pre_split=False):
     """
     ine-tunes the pre-trained model by unfreezing part of the layers.
     
     Returns:
         history_fine_tune (tf.keras.callbacks.History): Fine-tuning history.
     """
-    train_ds, val_ds, test_ds = preprocessed_data(apply_augmentation=False)
+    train_ds, val_ds, test_ds = preprocessed_data(apply_augmentation=False, use_pre_split=use_pre_split)
     model = build_model(is_fine_tuned=True)
 
     fine_tune_at = fine_tune_layer_input()

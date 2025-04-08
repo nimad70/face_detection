@@ -101,9 +101,9 @@ if __name__ == "__main__":
             """
             use_pre_split = get_user_input(is_application=True)
             if use_pre_split:
-                history = train_model(augmented=is_augmented)
+                history = train_model(augmented=is_augmented, use_pre_split=use_pre_split)
                 save_history_plot(history, "presplit")
-                fine_tune_model()
+                fine_tune_model(use_pre_split)
                 model = tf.keras.models.load_model(MODEL_PATH / "smile_detection_fine_tuned_model.h5")
             else:
                 train_with_kfold(augmented=is_augmented)
