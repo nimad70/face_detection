@@ -11,6 +11,17 @@ from src.object_detection.emotion_detection_gradio import run_emotion_detection
 
 
 def process_image(image, confidence_threshold, show_boxes):
+    """
+    Process the input image and run emotion detection.
+    
+    Parameters:
+        image: Input image from the webcam.
+        confidence_threshold: Confidence threshold for detection.
+        show_boxes: Whether to show bounding boxes around detected faces.
+    
+    Returns:
+        Processed image with detected faces and their corresponding emotion labels.
+    """
     # Convert PIL to OpenCV format
     image  = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
     # Run emotion detection
@@ -22,6 +33,9 @@ def process_image(image, confidence_threshold, show_boxes):
 
 
 def run_gradio_ui():
+    """
+    Run the Gradio UI for emotion detection.
+    """
     iface = gr.Interface(
         fn=process_image,
         inputs=[
@@ -37,6 +51,10 @@ def run_gradio_ui():
 
     iface.launch(share=True)
 
+
 if __name__ == "__main__":
+    """
+    Main function to run the Gradio UI.
+    """
     # Launch the Gradio interface
     run_gradio_ui()
