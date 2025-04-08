@@ -1,3 +1,8 @@
+"""
+Emotion Detection using EfficientNetB0 and ResNet SSD.
+This script performs emotion detection using a TFLite model based on EfficientNetB0 architecture.
+"""
+
 import time
 
 import cv2
@@ -14,6 +19,12 @@ TFLITE_MODEL_PATH = Path("model/EfficientNetB0/smile_detection_model.tflite")
 
 
 def run_emotion_detection(image, confidence_threshold=0.5, show_boxes=True):
+    """
+    Run emotion detection on the input image using a TFLite model.
+    
+    Returns:
+        image with detected faces and their corresponding emotion labels.
+    """
     # Load TFLite model
     interpreter = tf.lite.Interpreter(model_path=str(TFLITE_MODEL_PATH))
     interpreter.allocate_tensors()
