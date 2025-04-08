@@ -2,6 +2,7 @@
 Real-time face expression detection using TFLite model and ResNet SSD face detector.
 This script captures video from the webcam, detects faces using a pre-trained ResNet SSD model.
 """
+import time
 
 import cv2
 import numpy as np
@@ -20,6 +21,10 @@ def run_emotion_detection():
     """
     Real-time smile detection using TFLite model and ResNet SSD face detector.
     """
+    fps = 0
+    frame_count = 0
+    start_time = time.time()
+
     # Load TFLite model
     interpreter = tf.lite.Interpreter(model_path=str(TFLITE_MODEL_PATH))
     interpreter.allocate_tensors()
@@ -43,6 +48,15 @@ def run_emotion_detection():
         ret, frame = cap.read()
         if not ret:
             break
+            
+        frame_count += 1
+        elapsed_time = time.time() - start_time
+        if elapsed_time > 1:
+            fps = frame_count / elapsed_time
+            start_time = time.time()
+        
+        cv2.putText(frame, f"FPS: {fps:.2f}", (10, 20), 
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
 
         h, w = frame.shape[:2]
         blob = cv2.dnn.blobFromImage(frame, 1.0, input_size, (104.0, 177.0, 123.0))
