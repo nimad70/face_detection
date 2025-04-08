@@ -29,7 +29,8 @@ RUN pip install -r requirements.txt
 COPY . .
 
 # Commands to run on container start
-CMD ["python" , "app.py"]
+CMD ["python" , "app_cli.py"]
+# CMD ["streamlit", "run", "app.py", "--server.headless=true", "--server.port=8501", "--server.address=0.0.0.0"]
 # CMD ["bash"]
 
 
