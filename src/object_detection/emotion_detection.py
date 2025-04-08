@@ -1,5 +1,5 @@
 """
-Real-time smile detection using TFLite model and ResNet SSD face detector.
+Real-time face expression detection using TFLite model and ResNet SSD face detector.
 This script captures video from the webcam, detects faces using a pre-trained ResNet SSD model.
 """
 
@@ -16,7 +16,7 @@ IMG_SIZE = 224
 TFLITE_MODEL_PATH = Path("model/EfficientNetB0/smile_detection_model.tflite")
 
 
-def face_expression_detection_tflite():
+def run_emotion_detection():
     """
     Real-time smile detection using TFLite model and ResNet SSD face detector.
     """
