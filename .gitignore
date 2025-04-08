@@ -187,12 +187,13 @@ docker-logs/
 docker-compose.override.yml
 container_data/
 
-# Image files and labels
+# files and directories
 notebook/
 dataset/
 data/
 dataset/labels.csv
+.gradio
+.qodo
 
 # Ignore editor swap files
 *.swp
-.qodo
