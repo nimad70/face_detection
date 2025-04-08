@@ -18,4 +18,5 @@ def show_menu():
     print("2. Augment the dataset")
     print("3. Train and Evaluate the CNN (EfficientNetB0) model")
     print("4. Smile detection")
-    print("5. Exit")
+    print("5. Gradio UI")
+    print("6. Exit")

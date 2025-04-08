@@ -11,6 +11,7 @@ from tensorflow import keras
 
 from src.data_pipeline.augment_data_pipeline import save_augmented_images
 from src.data_pipeline.training_data_pipeline import split_dataset, LABELS
+from src.deployment.gradio_ui import run_gradio_ui
 from src.model_training.model_training_EfficientNetB0 import (
     fine_tune_model, 
     get_user_input, 
@@ -32,7 +33,7 @@ if __name__ == "__main__":
 
     while True:
         show_menu()
-        choice = input("Enter your choice (1-5): ").strip()
+        choice = input("Enter your choice (1-6): ").strip()
 
         if choice == "1":
             """
@@ -125,8 +126,14 @@ if __name__ == "__main__":
             Runs real-time face detection and smile classification using a webcam feed.
             """
             run_emotion_detection()
-
+        
         elif choice == "5":
+            """
+            Runs real-time face detection and smile classification using a webcam feed.
+            """
+            run_gradio_ui()
+
+        elif choice == "6":
             """
             Exits the application.
             """
@@ -138,7 +145,7 @@ if __name__ == "__main__":
             """
             Handles invalid menu selections.
             """
-            invalid_option_text = "<Invalid choice> --> Please select a valid option between 1 to 5!"
+            invalid_option_text = "<Invalid choice> --> Please select a valid option between 1 to 6!"
             print('-' * len(invalid_option_text))
             print(f"{invalid_option_text}")
             print('-' * len(invalid_option_text))
