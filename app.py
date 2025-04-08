@@ -10,7 +10,7 @@ import tensorflow as tf
 from tensorflow import keras
 
 from src.data_pipeline.augment_data_pipeline import save_augmented_images
-from src.data_pipeline.tarining_data_pipeline import split_dataset, LABELS
+from src.data_pipeline.training_data_pipeline import split_dataset, LABELS
 from src.model_training.model_training_EfficientNetB0 import (
     fine_tune_model, 
     get_user_input, 
