@@ -178,5 +178,5 @@ emotion_detection/
 - **Nima Daryabar**
 
 ## License
-
-This project is currently private and does not have a license yet.
+This project is licensed under the **Apache License 2.0**.  
+See the [LICENSE](LICENSE) file for details.
