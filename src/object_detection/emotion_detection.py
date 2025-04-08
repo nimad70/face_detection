@@ -81,7 +81,8 @@ def run_emotion_detection():
                 interpreter.invoke()
                 prediction = interpreter.get_tensor(output_details[0]['index'])[0][0]
 
-                label = "Smiling" if prediction > 0.5 else "Not Smiling"
+                # label = "Smiling" if prediction > 0.5 else "Not Smiling"
+                label = f"smiling ({prediction:.2f})" if prediction > 0.5 else f"Not Smiling ({prediction:.2f})"
                 color = (0, 255, 0) if label == "Smiling" else (0, 0, 255)
 
                 cv2.rectangle(frame, (startX, startY), (endX, endY), color, 1)
