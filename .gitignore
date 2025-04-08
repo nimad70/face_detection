@@ -194,6 +194,7 @@ data/
 dataset/labels.csv
 .gradio
 .qodo
+report/
 
 # Ignore editor swap files
 *.swp
